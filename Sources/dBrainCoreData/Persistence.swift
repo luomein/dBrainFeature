@@ -26,7 +26,7 @@ public struct PersistenceController {
             schema2.name = "schema2"
             
             let instance = CoreDataInstanceEntity(context: viewContext)
-            instance.id = UUID()
+            instance.id = UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!
             instance.schema = schema
             
             let pairSchema = CoreDataSchemaRelationPair(context: viewContext)
@@ -39,7 +39,7 @@ public struct PersistenceController {
             pairSchemaElement.pair = pairSchema
             let pairSchemaElement2 = CoreDataSchemaRelationPairElement(context: viewContext)
             pairSchemaElement2.id = UUID()
-            pairSchemaElement2.schema = schema
+            pairSchemaElement2.schema = schema2
             pairSchemaElement2.name = "r2"
             pairSchemaElement2.pair = pairSchema
             

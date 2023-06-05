@@ -9,26 +9,28 @@ import Foundation
 import CoreData
 import dBrainFeature
 
-extension CoreDataInstanceRelationPairElement{
-    public func getPairedElement()->CoreDataInstanceRelationPairElement{
-        return self.pair!.elements!.allObjects.map({$0 as! CoreDataInstanceRelationPairElement}).first {
-            $0 != self
-        }!
+
+
+
+extension CoreDataInstanceEntity:CoreDataProperty{
+    public var setSelectItemByType: SelectItem.SetSelectItemByType {
+        return .coreDataInstanceEntity(self)
     }
-}
-extension CoreDataSchemaRelationPairElement{
-    public func getPairedElement()->CoreDataSchemaRelationPairElement{
-        return self.pair!.elements!.allObjects.map({$0 as! CoreDataSchemaRelationPairElement}).first {
-            $0 != self
-        }!
+    
+    public static var entityName : String{
+        return "CoreDataInstanceEntity"
+        //why Self.entity().name possibliy be nil
     }
+//    public static var mutableSetValueKey: String{
+//        return "relationPairElements"
+//    }
 }
-extension CoreDataInstanceEntity{
-    public var schemaID : UUID{
+public extension CoreDataInstanceEntity{
+    var schemaID : UUID{
         return self.schema!.id!
     }
     
-    public var mapped : InstanceEntity{
+    var mapped : InstanceEntity{
         return .init(id: self.id!, schemaID: self.schemaID)
     }
     
@@ -65,29 +67,4 @@ extension CoreDataInstanceEntity{
         
         
     }
-    public func getRelationPairElement(schemaEntity: CoreDataSchemaEntity)->[CoreDataSchemaRelationPairElement]?{
-//        if let schemaRelationPairElement = schemaEntity.relationPairElements?.allObjects.map({$0 as! CoreDataSchemaRelationPairElement}).first(where: {
-//            if let instances = $0.instances, instances.count > 0 {
-//                if let _ =  instances.allObjects.first(where: {
-//                    ($0 as! CoreDataInstanceRelationPairElement).instance == self
-//                }){
-//                    return false
-//                }
-//                return true
-//            }
-//            return false
-//        }){
-//            return  [schemaRelationPairElement]
-//        }
-        
-        if let schemaRelationPairElement = schemaEntity.relationPairElements?.allObjects.map({$0 as! CoreDataSchemaRelationPairElement}).first(where: {
-            return $0.schema != self.schema
-        }){
-            return  [schemaRelationPairElement]
-        }
-        else{
-            return (schemaEntity.relationPairElements?.allObjects.map({$0 as! CoreDataSchemaRelationPairElement}))
-        }
-    }
-    
 }

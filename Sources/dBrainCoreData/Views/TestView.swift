@@ -10,7 +10,7 @@ import CoreData
 
 
 @available(macOS 11.0, *)
-struct SwiftUIView: View {
+struct TestView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
@@ -24,16 +24,12 @@ struct SwiftUIView: View {
     func getRelatedInstance(pairElement: CoreDataSchemaRelationPairElement
                             ,item: CoreDataInstanceEntity
     )-> some View{
-        if let instancePairElements = pairElement.instances?.allObjects.map({($0 as! CoreDataInstanceRelationPairElement)})
+        if let instances = pairElement.coreDataInstanceRelationPairElements?
                                         .filter({
-                                            $0.instance! == item
+                                            $0.getPairedElement().instance! == item
                                         })
 
         {
-            let instances = instancePairElements.map({
-                $0.getPairedElement().instance!
-            })
-            //Text(instances.first?.id?.uuidString ?? "")
             ForEach(instances ) { instance in
                 Text(instance.id?.uuidString ?? "")
             }
@@ -47,7 +43,7 @@ struct SwiftUIView: View {
         Form{
             ForEach(items, id: \.self) { item in
                 Text(item.id?.uuidString ?? "")
-                if let pairElements = item.getRelationPairElement(schemaEntity: item.schema!)
+                if let pairElements = item.schema!.relationPairElements?.allObjects.map({$0 as! CoreDataSchemaRelationPairElement}) //item.getRelationPairElement(schemaEntity: item.schema!)
                  {
                     ForEach(pairElements, id: \.self) { pairElement in
                         DisclosureGroup {
@@ -74,9 +70,9 @@ struct SwiftUIView: View {
 }
 
 @available(macOS 11.0, *)
-struct SwiftUIView_Previews: PreviewProvider {
+struct TestView_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftUIView()
+        TestView()
             .environment(\.managedObjectContext, PersistenceController.previewByOption(option: .singleInstanceEntity).container.viewContext)
     }
 }
