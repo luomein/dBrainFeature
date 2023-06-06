@@ -13,6 +13,13 @@ public struct SelectItem{
     public var coreDataSchemaRelationPairElement : CoreDataSchemaRelationPairElement?
     public var coreDataInstanceRelationPairElement: CoreDataInstanceRelationPairElement?
     
+    public init(coreDataSchemaEntity: CoreDataSchemaEntity? = nil, coreDataInstanceEntity: CoreDataInstanceEntity? = nil, coreDataSchemaRelationPairElement: CoreDataSchemaRelationPairElement? = nil, coreDataInstanceRelationPairElement: CoreDataInstanceRelationPairElement? = nil) {
+        self.coreDataSchemaEntity = coreDataSchemaEntity
+        self.coreDataInstanceEntity = coreDataInstanceEntity
+        self.coreDataSchemaRelationPairElement = coreDataSchemaRelationPairElement
+        self.coreDataInstanceRelationPairElement = coreDataInstanceRelationPairElement
+    }
+    
     public enum  SetSelectItemByType{
         case coreDataSchemaEntity(CoreDataSchemaEntity)
         case coreDataInstanceEntity(CoreDataInstanceEntity)

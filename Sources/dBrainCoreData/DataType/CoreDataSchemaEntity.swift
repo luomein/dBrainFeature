@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 extension CoreDataSchemaEntity:CoreDataProperty{
     public var setSelectItemByType: SelectItem.SetSelectItemByType {
@@ -28,5 +29,50 @@ public extension CoreDataSchemaEntity{
     
     var coreDataInstanceEntities: [CoreDataInstanceEntity]?{
         return self.instances?.allObjects.map({$0 as! CoreDataInstanceEntity})
+    }
+    
+    static func createSchema( viewContext: NSManagedObjectContext)->Self{
+        let newItem = Self(context: viewContext)
+        newItem.id = UUID()
+        newItem.name = "new schema"
+        do {
+            try viewContext.save()
+            return newItem
+        } catch {
+            // Replace this implementation with code to handle the error appropriately.
+            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    func createPairedSchema( viewContext: NSManagedObjectContext)->Self{
+        let newItem = Self(context: viewContext)
+        newItem.id = UUID()
+        newItem.name = "new schema"
+        
+        let newPair = CoreDataSchemaRelationPair(context: viewContext)
+        newPair.id = UUID()
+        
+        let newPairElement = CoreDataSchemaRelationPairElement(context: viewContext)
+        newPairElement.id = UUID()
+        newPairElement.pair = newPair
+        newPairElement.schema = self
+        newPairElement.name = "new relation"
+        
+        let newPairElement2 = CoreDataSchemaRelationPairElement(context: viewContext)
+        newPairElement2.id = UUID()
+        newPairElement2.pair = newPair
+        newPairElement2.schema = newItem
+        newPairElement2.name = "new relation"
+        
+        do {
+            try viewContext.save()
+            return newItem
+        } catch {
+            // Replace this implementation with code to handle the error appropriately.
+            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
     }
 }

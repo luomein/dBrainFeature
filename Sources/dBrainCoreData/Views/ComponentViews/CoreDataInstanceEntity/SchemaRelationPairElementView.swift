@@ -33,7 +33,13 @@ struct SchemaRelationPairElementView : View{
                     }
                 } label: {
                     HStack{
-                        Text(pairElement.name ?? pairElement.schema!.name! )
+                        //Text(pairElement.name ?? pairElement.schema!.name! )
+                        TextField("name", text: .init(get: {
+                            return pairElement.name ?? pairElement.schema!.name!
+                        }, set: {
+                            pairElement.name = $0
+                            try! viewContext.save()
+                        }))
                         Button {
                             item.createRelatedInstance(schemaRelationPairElement: pairElement, viewContext: viewContext)
                         } label: {

@@ -7,24 +7,7 @@
 
 import SwiftUI
 
-struct SchemaEntityView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    @Binding var selectItem: SelectItem
-    
-    var body: some View {
-        if let item = selectItem.coreDataSchemaEntity{
-            Group{
-                //Text(item.mutableSetValue(forKey: "relationPairElements").count.description)
-                Text(item.name!)
-                if let instances = item.coreDataInstanceEntities{
-                    ForEach(instances) { instance in
-                        CoreDataIDWrapperView<InstanceEntityView, CoreDataInstanceEntity>(uuid: instance.id!, componentView: InstanceEntityView.init, selectItem: $selectItem)
-                    }
-                }
-            }
-        }
-    }
-}
+
 struct SimpleInstanceEntityView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var item : CoreDataInstanceEntity
@@ -32,15 +15,23 @@ struct SimpleInstanceEntityView: View {
         Text(item.mutableSetValue(forKey: "relationPairElements").count.description)
     }
 }
-struct InstanceEntityView: View {
+public struct InstanceEntityView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var selectItem: SelectItem
     
-    var body: some View {
+    public init(selectItem: Binding<SelectItem>) {
+        self._selectItem = selectItem
+    }
+    public var body: some View {
         if let item = selectItem.coreDataInstanceEntity{
             Group{
                 DisclosureGroup {
-                    //Text(item.mutableSetValue(forKey: "relationPairElements").count.description)
+                    Button {
+                        item.schema!.createPairedSchema(viewContext: viewContext)
+                    } label: {
+                        Text("create")
+                    }
+
                     
                     if let pairElements = item.schema!.coreDataSchemaRelationPairElements?.map({
                         $0.getPairedElement()
@@ -50,7 +41,6 @@ struct InstanceEntityView: View {
                             CoreDataIDWrapperView<SchemaRelationPairElementView,CoreDataSchemaRelationPairElement>(uuid: pairElement.id!
                                                                                                                    , componentView: SchemaRelationPairElementView.init,selectItem: $selectItem
                             )
-                            EmptyView()
                         }
                     }
                 } label: {

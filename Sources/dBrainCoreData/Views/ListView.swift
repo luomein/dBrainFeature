@@ -7,21 +7,26 @@
 
 import SwiftUI
 
-struct ListView: View {
+public struct ListView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
         sortDescriptors: [],
         animation: .default)
-    //private var items: FetchedResults<CoreDataInstanceEntity>
     private var items: FetchedResults<CoreDataSchemaEntity>
     @State var selectItem : SelectItem = .init()
-    
-    var body: some View {
+    public init() {
+        
+    }
+    public var body: some View {
         Form{
+            Button {
+                CoreDataSchemaEntity.createSchema(viewContext: viewContext)
+            } label: {
+                Text("create")
+            }
+
             ForEach(items, id: \.self) { item in
-//                CoreDataIDWrapperView<InstanceEntityView,CoreDataInstanceEntity>(uuid: item.id!
-//                                                                                 , componentView: InstanceEntityView.init, selectItem: $selectItem)
                 CoreDataIDWrapperView<SchemaEntityView,CoreDataSchemaEntity>(uuid: item.id!
                                                                                  , componentView: SchemaEntityView.init, selectItem: $selectItem)
             }

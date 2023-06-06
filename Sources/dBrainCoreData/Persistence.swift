@@ -8,12 +8,12 @@
 import CoreData
 
 public struct PersistenceController {
-    static let shared = PersistenceController()
+    public static let shared = PersistenceController()
 
     public enum PreviewOption{
         case singleInstanceEntity
     }
-    static func previewByOption(option: PreviewOption)->PersistenceController{
+    public static func previewByOption(option: PreviewOption)->PersistenceController{
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         switch option{
@@ -55,7 +55,7 @@ public struct PersistenceController {
         }
         return result
     }
-    static var preview: PersistenceController = {
+    public static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
@@ -73,9 +73,9 @@ public struct PersistenceController {
         return result
     }()
 
-    let container: NSPersistentContainer
+    public let container: NSPersistentContainer
 
-    init(inMemory: Bool = false) {
+    public init(inMemory: Bool = false) {
         guard let modelURL = Bundle.module.url(forResource:"dBrainModel", withExtension: "momd") else { fatalError() }
         guard let model = NSManagedObjectModel(contentsOf: modelURL) else { fatalError() }
                 
