@@ -25,6 +25,26 @@ extension CoreDataInstanceEntity:CoreDataProperty{
 //        return "relationPairElements"
 //    }
 }
+public extension NSManagedObjectContext{
+    public static func getFetchRequestByUUID<T:CoreDataProperty>(uuid: UUID)->NSFetchRequest<T> where T:NSManagedObject{
+        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
+        fetchRequest.sortDescriptors = []
+        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
+        
+        return fetchRequest
+//        let item = try! viewContext.fetch(fetchRequest).first!
+//        return item
+    }
+    public func getFetchResultByUUID<T:CoreDataProperty>(uuid: UUID)->T where T:NSManagedObject{
+//        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
+//        fetchRequest.sortDescriptors = []
+//        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
+        let fetchRequest : NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
+        
+        let item = try! self.fetch(fetchRequest).first!
+        return item
+    }
+}
 public extension CoreDataInstanceEntity{
     var schemaID : UUID{
         return self.schema!.id!
@@ -33,11 +53,23 @@ public extension CoreDataInstanceEntity{
     var mapped : InstanceEntity{
         return .init(id: self.id!, schemaID: self.schemaID)
     }
-    
+    static func updatePin(uuid: UUID, isPinned: Bool, viewContext: NSManagedObjectContext){
+        let item : Self = viewContext.getFetchResultByUUID(uuid: uuid)
+        if item.isPinned != isPinned{
+            item.isPinned = isPinned
+            item.timestamp = Date()
+        }
+    }
+    static func updateTimestamp(uuid: UUID, viewContext: NSManagedObjectContext){
+        let item : Self = viewContext.getFetchResultByUUID(uuid: uuid)
+        item.timestamp = Date()
+    }
     public static func createInstance(of schema: CoreDataSchemaEntity, viewContext: NSManagedObjectContext)->CoreDataInstanceEntity{
         let newItem = Self(context: viewContext)
         newItem.id = UUID()
         newItem.schema = schema
+        newItem.timestamp = Date()
+        newItem.isPinned = false
         do {
             try viewContext.save()
             return newItem
@@ -49,7 +81,7 @@ public extension CoreDataInstanceEntity{
         }
     }
     public func createRelatedInstance(schemaRelationPairElement: CoreDataSchemaRelationPairElement, viewContext: NSManagedObjectContext){
-        let newItem = CoreDataInstanceEntity.createInstance(of: schemaRelationPairElement.schema!, viewContext: viewContext)
+        let newItem = Self.createInstance(of: schemaRelationPairElement.schema!, viewContext: viewContext)
         
         let newPair = CoreDataInstanceRelationPair(context: viewContext)
         

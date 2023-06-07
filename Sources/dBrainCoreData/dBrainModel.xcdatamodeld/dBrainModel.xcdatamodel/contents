@@ -2,6 +2,8 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22D49" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CoreDataInstanceEntity" representedClassName="CoreDataInstanceEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isPinned" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="relationPairElements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="instance" inverseEntity="CoreDataInstanceRelationPairElement"/>
         <relationship name="schema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaEntity" inverseName="instances" inverseEntity="CoreDataSchemaEntity"/>
     </entity>

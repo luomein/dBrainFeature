@@ -45,11 +45,16 @@ public extension CoreDataSchemaEntity{
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
-    func createPairedSchema( viewContext: NSManagedObjectContext)->Self{
-        let newItem = Self(context: viewContext)
-        newItem.id = UUID()
-        newItem.name = "new schema"
-        
+    func createPairedSchema(pair to: CoreDataSchemaEntity? = nil, viewContext: NSManagedObjectContext)->Self{
+        let pairTo : Self
+        if to == nil{
+            let newItem = Self(context: viewContext)
+            newItem.id = UUID()
+            newItem.name = "new schema"
+            pairTo = newItem
+        }else{
+            pairTo = to! as! Self
+        }
         let newPair = CoreDataSchemaRelationPair(context: viewContext)
         newPair.id = UUID()
         
@@ -57,17 +62,17 @@ public extension CoreDataSchemaEntity{
         newPairElement.id = UUID()
         newPairElement.pair = newPair
         newPairElement.schema = self
-        newPairElement.name = "new relation"
+        newPairElement.name = "new relation: \(self.name!) -- \(pairTo.name!)"
         
         let newPairElement2 = CoreDataSchemaRelationPairElement(context: viewContext)
         newPairElement2.id = UUID()
         newPairElement2.pair = newPair
-        newPairElement2.schema = newItem
-        newPairElement2.name = "new relation"
+        newPairElement2.schema = pairTo
+        newPairElement2.name = "new relation: \(self.name!) -- \(pairTo.name!)"
         
         do {
             try viewContext.save()
-            return newItem
+            return pairTo
         } catch {
             // Replace this implementation with code to handle the error appropriately.
             // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.

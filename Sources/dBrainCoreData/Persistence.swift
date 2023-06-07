@@ -6,7 +6,43 @@
 //
 
 import CoreData
+import ComposableArchitecture
 
+extension DependencyValues {
+  /// The current dependency context.
+  ///
+  /// The current ``DependencyContext`` can be used to determine how dependencies are loaded by the
+  /// current runtime.
+  ///
+  /// It can also be overridden, for example via ``withDependencies(_:operation:)-4uz6m``, to
+  /// control how dependencies will be loaded by the runtime for the duration of the override.
+  ///
+  /// ```swift
+  /// withDependencies {
+  ///   $0.context = .preview
+  /// } operation: {
+  ///   // Dependencies accessed here default to their "preview" value
+  /// }
+  /// ```
+//  public var viewContextDependencyManager: NSManagedObjectContextDependencyManager {
+//    get { self[NSManagedObjectContextDependencyManager.self] }
+//    set { self[NSManagedObjectContextDependencyManager.self] = newValue }
+//  }
+    public var viewContext: NSManagedObjectContext  {
+      get { self[NSManagedObjectContext.self] }
+      set { self[NSManagedObjectContext.self] = newValue }
+    }
+}
+extension NSManagedObjectContext : DependencyKey {
+    public static let liveValue : NSManagedObjectContext = PersistenceController.shared.container.viewContext
+    public static let testValue : NSManagedObjectContext = PersistenceController.preview.container.viewContext
+}
+//public struct NSManagedObjectContextDependencyManager : DependencyKey {
+//    public var viewContext : NSManagedObjectContext
+//    public static let liveValue : NSManagedObjectContextDependencyManager = .init(viewContext: PersistenceController.shared.container.viewContext )
+//  //public static let previewValue = PersistenceController.preview
+//    public static let testValue : NSManagedObjectContextDependencyManager = .init(viewContext: PersistenceController.preview.container.viewContext )
+//}
 public struct PersistenceController {
     public static let shared = PersistenceController()
 

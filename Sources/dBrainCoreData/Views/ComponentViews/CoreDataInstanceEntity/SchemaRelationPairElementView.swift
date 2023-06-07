@@ -7,10 +7,13 @@
 
 import SwiftUI
 
-struct SchemaRelationPairElementView : View{
+public struct SchemaRelationPairElementView : View{
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var selectItem: SelectItem
-    var body: some View {
+    public init(selectItem: Binding<SelectItem>) {
+        self._selectItem = selectItem
+    }
+    public var body: some View {
         if let item = selectItem.coreDataInstanceEntity,
            let pairElement = selectItem.coreDataSchemaRelationPairElement{
             Group{
