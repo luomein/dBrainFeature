@@ -45,10 +45,10 @@ public struct SchemaEntityFeature: ReducerProtocol{
             assert(instanceRelationPairs.first(where: { instanceRelationPair in
                 instanceRelationPair.elements.first(where: { instanceRelationPairElement in
                     let count = schemaRelationPairs.filter( { schemaRelationPair in
-                        print(schemaRelationPair)
+                        //print(schemaRelationPair)
                         return schemaRelationPair.elements[id: instanceRelationPairElement.schemaID] != nil
                     }).count
-                    print(instanceRelationPairElement, count)
+                    //print(instanceRelationPairElement, count)
                     return count != 1
                 }) != nil
             }) == nil )

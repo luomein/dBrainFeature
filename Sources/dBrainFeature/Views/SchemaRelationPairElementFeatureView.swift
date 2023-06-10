@@ -29,7 +29,7 @@ struct SchemaRelationPairElementFeatureView: View {
 //                    Text(schemaRelationPairElement.id.uuidString)
 //                })
             } label: {
-                Text("Instance")
+                Text(viewStore.schemaRelationPairElement.schemaID.uuidString)
             }
         }
     }

@@ -14,6 +14,7 @@ public extension NSManagedObjectContext{
     var dataAgent : dBrainDataAgent{
         return .init(schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation)
                      , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance:  createRelatedInstance )
+                     , schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelation)
         )
     }
     func createRelatedInstance(of pairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity){
@@ -28,6 +29,13 @@ public extension NSManagedObjectContext{
         //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
         let coreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: schema.id)
         CoreDataInstanceEntity.createInstance(of: coreDataSchemaEntity, viewContext: self)
+    }
+    func createRelation(of schema: SchemaEntity, to schemas: Set<SchemaEntity>){
+        let coreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: schema.id)
+        for selectedSchema in schemas{
+            let pairCoreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: selectedSchema.id)
+            coreDataSchemaEntity.createPairedSchema(pair: pairCoreDataSchemaEntity,viewContext: self)
+        }
     }
     func createRelation(of schema: SchemaEntity){
         //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))

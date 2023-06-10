@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import dBrainFeature
 
 public struct ListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
+    @Environment(\.dbrainDataAgent) var dataAgent
     @FetchRequest(
         sortDescriptors: [],
         animation: .default)
@@ -38,15 +39,27 @@ public struct ListView: View {
                 
             }
         }
+        .navigationDestination(for: SchemaEntityFeatureView.StackNavPath.self) { destination in
+            switch destination{
+            case .SchemaEntitySelectToPairFeatureView(let uuid):
+                SchemaEntitySelectToPairFeatureView(store: .init(initialState: .init(schemaEntity: .init(id: uuid, name: ""), allSchemaEntities: .init(uniqueElements:  items.map({$0.converter.schemaEntity}) ) ), reducer: SchemaEntitySelectToPairFeature(dataAgent: dataAgent.schemaEntitySelectToPairFeatureDataAgent)))
+            }
+        }
     }
 }
-
+struct ListViewWraperView : View{
+    @State var navPath = [SchemaEntityFeatureView.StackNavPath]()
+    public var body: some View {
+        NavigationStack(path: $navPath) {
+            ListView()
+                
+        }
+    }
+}
 struct ListView_Previews: PreviewProvider {
     static var previews: some View {
         let viewContext = PersistenceController.previewByOption(option: .singleInstanceEntity).container.viewContext
-        NavigationView {
-            ListView()
-        }
+        ListViewWraperView()
         .environment(\.dbrainDataAgent,  viewContext.dataAgent)
             .environment(\.managedObjectContext, viewContext)
     }

@@ -22,7 +22,7 @@ struct InstanceEntityFeatureView: View {
                     SchemaRelationPairElementFeatureView(store: .init(initialState: viewStore.state.getSubState(of: schemaRelationPairElement), reducer: SchemaRelationPairElementFeature(dataAgent: dataAgent.schemaRelationPairElementFeatureDataAgent)))
                 })
             } label: {
-                Text("Relation")
+                Text(viewStore.instanceEntity.id.uuidString)
             }
         }
     }

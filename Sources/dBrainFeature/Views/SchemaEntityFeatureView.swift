@@ -9,6 +9,9 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct SchemaEntityFeatureView: View {
+    public enum StackNavPath:Hashable{
+        case SchemaEntitySelectToPairFeatureView(UUID)
+    }
     @Environment(\.dbrainDataAgent) var dataAgent
     var store : StoreOf<SchemaEntityFeature>
     public init(store: StoreOf<SchemaEntityFeature>) {
@@ -32,12 +35,16 @@ public struct SchemaEntityFeatureView: View {
                 Text("Instance")
             }
             DisclosureGroup {
-                Button {
-                    viewStore.send(.createRelation)
-                } label: {
-                    Text("createRelation")
+                 
+                    Button {
+                        viewStore.send(.createRelation)
+                    } label: {
+                        Text("create")
+                    }
+                NavigationLink(value: StackNavPath.SchemaEntitySelectToPairFeatureView(viewStore.schemaEntity.id)) {
+                    Text("select")
                 }
-                
+               
                 ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
                     
                     Text(schemaRelationPairElement.schemaID.uuidString)
@@ -105,6 +112,8 @@ struct SchemaEntityFeatureWrapperView: View {
 }
 struct SchemaEntityFeatureView_Previews: PreviewProvider {
     static var previews: some View {
-        SchemaEntityFeatureDataSourceView()
+        NavigationStack{
+            SchemaEntityFeatureDataSourceView()
+        }
     }
 }
