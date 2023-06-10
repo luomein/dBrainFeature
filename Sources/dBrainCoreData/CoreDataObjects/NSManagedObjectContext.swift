@@ -8,8 +8,34 @@
 import Foundation
 import CoreData
 import ComposableArchitecture
+import dBrainFeature
 
-extension DependencyValues {
+public extension NSManagedObjectContext{
+    var dataAgent : dBrainDataAgent{
+        return .init(schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation)
+                     , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance:  createRelatedInstance )
+        )
+    }
+    func createRelatedInstance(of pairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity){
+        let instance : CoreDataInstanceEntity = self.getFetchResultByUUID(uuid: instance.id)
+        let schemaRelationPairElement : CoreDataSchemaRelationPairElement = self.getFetchResultByUUID(uuid: pairElement.id)
+        let schemaRelationPair: CoreDataSchemaRelationPair = self.getFetchResultByUUID(uuid: pair.id)
+        assert(schemaRelationPairElement.pair! == schemaRelationPair)
+        instance.createRelatedInstance(schemaRelationPairElement: schemaRelationPairElement
+                                       , viewContext: self)
+    }
+    func createInstance(of schema: SchemaEntity){
+        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
+        let coreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: schema.id)
+        CoreDataInstanceEntity.createInstance(of: coreDataSchemaEntity, viewContext: self)
+    }
+    func createRelation(of schema: SchemaEntity){
+        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
+        let coreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: schema.id)
+        coreDataSchemaEntity.createPairedSchema(viewContext: self)
+    }
+}
+public extension DependencyValues {
   /// The current dependency context.
   ///
   /// The current ``DependencyContext`` can be used to determine how dependencies are loaded by the

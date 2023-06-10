@@ -8,6 +8,7 @@
 import Foundation
 import ComposableArchitecture
 
+
 public struct InstanceEntityFeature: ReducerProtocol{
     public init(dataAgent: DataAgent){
         self.dataAgent = dataAgent
@@ -17,6 +18,18 @@ public struct InstanceEntityFeature: ReducerProtocol{
         public var instanceEntity : InstanceEntity
         public var schemaRelationPairs : IdentifiedArrayOf<SchemaRelationPair>
         public var instanceRelationPairs: IdentifiedArrayOf<InstanceRelationPair>
+        
+        public func getSubState(of schemaRelationPairElement: SchemaRelationPairElement)->SchemaRelationPairElementFeature.State{
+            let schemaRelationPair = schemaRelationPairs.first(where: {$0.elements[id:schemaRelationPairElement.id] != nil})!
+            let filteredInstanceRelationPairs = instanceRelationPairs.filter({$0.schemaID == schemaRelationPair.id})
+            return .init(schemaEntity: schemaEntity
+                         , instanceEntity: instanceEntity
+                         , schemaRelationPair: schemaRelationPair
+                         , schemaRelationPairElement: schemaRelationPairElement
+                         , instanceRelationPairs: filteredInstanceRelationPairs)
+
+        }
+        
         
         public init(schemaEntity: SchemaEntity, instanceEntity:  InstanceEntity, schemaRelationPairs: IdentifiedArrayOf<SchemaRelationPair>, instanceRelationPairs: IdentifiedArrayOf<InstanceRelationPair>) {
             self.schemaEntity = schemaEntity
@@ -30,15 +43,20 @@ public struct InstanceEntityFeature: ReducerProtocol{
             assert(schemaRelationPairs.first(where: {$0.elements.filter({schemaEntity.id == $0.schemaID}).count == 0}) == nil)
             assert(instanceRelationPairs.first(where: { instanceRelationPair in
                 instanceRelationPair.elements.first(where: { instanceRelationPairElement in
-                    schemaRelationPairs.first(where: { schemaRelationPair in
-                        schemaRelationPair.elements[id: instanceRelationPairElement.schemaID] == nil
-                    }) == nil
-                }) == nil
+                    let count = schemaRelationPairs.filter( { schemaRelationPair in
+                        //print(schemaRelationPair)
+                        return schemaRelationPair.elements[id: instanceRelationPairElement.schemaID] != nil
+                    }).count
+                    //print(instanceRelationPairElement, count)
+                    return count != 1
+                }) != nil
             }) == nil )
         }
     }
     public struct DataAgent{
-         
+        public init(){
+            
+        }
 //        var createRelatedInstance : (SchemaRelationPairElement,InstanceEntity)->Void
 //        public init(createRelatedInstance: @escaping (SchemaRelationPairElement,InstanceEntity) -> Void) {
 //            self.createRelatedInstance = createRelatedInstance

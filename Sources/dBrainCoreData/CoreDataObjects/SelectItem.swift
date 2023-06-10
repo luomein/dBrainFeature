@@ -25,6 +25,7 @@ public struct SelectItem: Equatable, Hashable{
         case coreDataInstanceEntity(CoreDataInstanceEntity)
         case coreDataSchemaRelationPairElement(CoreDataSchemaRelationPairElement)
         case coreDataInstanceRelationPairElement(CoreDataInstanceRelationPairElement)
+        case none
     }
     
     public static func setValue(setSelectItemByType: SetSelectItemByType, selectItem: SelectItem)->SelectItem{
@@ -38,6 +39,8 @@ public struct SelectItem: Equatable, Hashable{
             selectItem.coreDataInstanceRelationPairElement = value
         case .coreDataSchemaEntity(let value):
             selectItem.coreDataSchemaEntity = value
+        case .none:
+            break
         }
         return selectItem
     }

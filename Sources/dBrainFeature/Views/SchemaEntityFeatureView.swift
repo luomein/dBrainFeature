@@ -9,6 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct SchemaEntityFeatureView: View {
+    @Environment(\.dbrainDataAgent) var dataAgent
     var store : StoreOf<SchemaEntityFeature>
     public init(store: StoreOf<SchemaEntityFeature>) {
         self.store = store
@@ -24,10 +25,8 @@ public struct SchemaEntityFeatureView: View {
                 
                 ForEach(viewStore.instanceEntities, content: { instance in
                     //Text(instance.id.uuidString)
-                    InstanceEntityFeatureView(store: .init(initialState: .init(schemaEntity: viewStore.schemaEntity
-                                                                               , instanceEntity: instance
-                                                                               , schemaRelationPairs: viewStore.schemaRelationPairs
-                                                                               , instanceRelationPairs: viewStore.instanceRelationPairs.filter({$0.hasInstance(instance: instance)})), reducer: InstanceEntityFeature(dataAgent: .init())))
+                    InstanceEntityFeatureView(store: .init(initialState: viewStore.state.getSubState(of: instance)
+                                                           , reducer: InstanceEntityFeature(dataAgent: dataAgent.instanceEntityFeatureDataAgent)))
                 })
             } label: {
                 Text("Instance")
@@ -40,7 +39,8 @@ public struct SchemaEntityFeatureView: View {
                 }
                 
                 ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
-                    Text(schemaRelationPairElement.id.uuidString)
+                    
+                    Text(schemaRelationPairElement.schemaID.uuidString)
                 })
             } label: {
                 Text("Relation")
@@ -50,13 +50,32 @@ public struct SchemaEntityFeatureView: View {
         }
     }
 }
-struct SchemaEntityFeatureWrapperView: View {
+public struct SchemaEntityFeatureDataSourceView: View {
+//    var localDataAgent: dBrainDataAgent = .init(schemaEntityFeatureDataAgent:  .init(createInstance: createInstance, createRelation: createRelation))
+    @Environment(\.dbrainDataAgent) var dataAgent
     @State var dataSource = SchemaEntityFeature.State(schemaEntity: .init(id: UUID(), name: "test")
                                                       , instanceEntities: [], schemaRelationPairs: [], instanceRelationPairs: [])
-    var body: some View {
-        Form{
-            SchemaEntityFeatureView(store: .init(initialState: dataSource, reducer: SchemaEntityFeature(dataAgent: .init(createInstance: createInstance, createRelation: createRelation))))
-        }
+    public init(){
+    }
+    
+    public var body: some View {
+        SchemaEntityFeatureWrapperView(dataSource: $dataSource)
+        .environment(\.dbrainDataAgent, dBrainDataAgent(schemaEntityFeatureDataAgent:.init(createInstance: createInstance, createRelation: createRelation)
+                                                        , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance)
+                                                       ))
+       
+    }
+    func createRelatedInstance(of schemaRelationPairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity){
+        let newInstance = InstanceEntity(id: UUID(), schemaID: schemaRelationPairElement.schemaID)
+        let newPairInstanceElement = InstanceRelationPairElement(id: UUID(), instanceID: newInstance.id, schemaID: schemaRelationPairElement.id)
+        
+        let pairedSchemaRelationPairElement = pair.elements.first(where: {$0.id != schemaRelationPairElement.id})!
+        let pairedInstanceRelationPairElement = InstanceRelationPairElement(id: UUID(), instanceID: instance.id, schemaID: pairedSchemaRelationPairElement.id)
+        
+        let newPairInstance = InstanceRelationPair(id: UUID(), elements: .init(uniqueElements: [newPairInstanceElement, pairedInstanceRelationPairElement]), schemaID: pair.id)
+        
+        //dataSource.instanceEntities.append(newInstance) it belongs to another schema
+        dataSource.instanceRelationPairs.append(newPairInstance)
     }
     func createInstance(of schema: SchemaEntity){
         dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
@@ -70,8 +89,22 @@ struct SchemaEntityFeatureWrapperView: View {
         ]))
     }
 }
+struct SchemaEntityFeatureWrapperView: View {
+//    var localDataAgent: dBrainDataAgent = .init(schemaEntityFeatureDataAgent:  .init(createInstance: createInstance, createRelation: createRelation))
+    @Environment(\.dbrainDataAgent) var dataAgent
+    @Binding var dataSource : SchemaEntityFeature.State
+    var body: some View {
+        Form{
+            SchemaEntityFeatureView(store: .init(initialState: dataSource, reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent
+                                                                                                       )))
+        }
+        
+        
+    }
+    
+}
 struct SchemaEntityFeatureView_Previews: PreviewProvider {
     static var previews: some View {
-        SchemaEntityFeatureWrapperView()
+        SchemaEntityFeatureDataSourceView()
     }
 }

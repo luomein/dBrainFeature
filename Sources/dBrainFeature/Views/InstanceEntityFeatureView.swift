@@ -9,6 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct InstanceEntityFeatureView: View {
+    @Environment(\.dbrainDataAgent) var dataAgent
     var store : StoreOf<InstanceEntityFeature>
     public init(store: StoreOf<InstanceEntityFeature>) {
         self.store = store
@@ -17,7 +18,8 @@ struct InstanceEntityFeatureView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             DisclosureGroup {
                 ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
-                    Text(schemaRelationPairElement.id.uuidString)
+                    //Text(schemaRelationPairElement.id.uuidString)
+                    SchemaRelationPairElementFeatureView(store: .init(initialState: viewStore.state.getSubState(of: schemaRelationPairElement), reducer: SchemaRelationPairElementFeature(dataAgent: dataAgent.schemaRelationPairElementFeatureDataAgent)))
                 })
             } label: {
                 Text("Relation")
@@ -33,14 +35,6 @@ struct InstanceEntityFeatureWrapperView: View {
             InstanceEntityFeatureView(store: .init(initialState: dataSource, reducer: InstanceEntityFeature(dataAgent: .init())))
         }
     }
-//    func createRelation(of schema: SchemaEntity){
-//        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
-//        let newSchema = SchemaEntity(id: UUID(), name: "\(Int.random(in: 0...1000))")
-//        dataSource.schemaRelationPairs.append(.init(id: UUID(), elements: [
-//            .init(id: UUID(), schemaID: schema.id)
-//            ,.init(id: UUID(), schemaID: newSchema.id)
-//        ]))
-//    }
 }
 struct InstanceEntityFeatureView_Previews: PreviewProvider {
     static var previews: some View {

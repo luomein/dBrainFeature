@@ -71,7 +71,7 @@ public extension CoreDataSchemaEntity{
     static func createSchema( viewContext: NSManagedObjectContext)->Self{
         let newItem = Self(context: viewContext)
         newItem.id = UUID()
-        newItem.name = "new schema"
+        newItem.name = "\(Int.random(in: 0...1000))"
         do {
             try viewContext.save()
             return newItem

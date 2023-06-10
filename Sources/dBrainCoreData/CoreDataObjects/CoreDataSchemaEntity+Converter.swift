@@ -26,7 +26,9 @@ public extension CoreDataSchemaEntity{
         }
         public var instanceRelationPairs : IdentifiedArrayOf<InstanceRelationPair>{
             let schemaRelationPairsSet = Set(item.coreDataSchemaRelationPairElements?.map({$0.pair!}) ?? [])
+            //print(schemaRelationPairsSet)
             let instanceRelationPairSet = schemaRelationPairsSet.flatMap({$0.coreDataInstanceRelationPairs ?? []})
+            //print(instanceRelationPairSet)
             return .init(uniqueElements: instanceRelationPairSet.map({$0.converter.instanceRelationPair}))
         }
         

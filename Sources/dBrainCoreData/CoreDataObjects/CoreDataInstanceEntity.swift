@@ -66,6 +66,8 @@ public extension CoreDataInstanceEntity{
         let newItem = Self.createInstance(of: schemaRelationPairElement.schema!, viewContext: viewContext)
         
         let newPair = CoreDataInstanceRelationPair(context: viewContext)
+        newPair.id = UUID()
+        newPair.schema = schemaRelationPairElement.pair!
         
         let newPairElement = CoreDataInstanceRelationPairElement(context: viewContext)
         newPairElement.schema = schemaRelationPairElement

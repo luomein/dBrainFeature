@@ -13,6 +13,8 @@ import IdentifiedCollections
 
 struct CoreDataSchemaEntityWrapperView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dbrainDataAgent) var dataAgent
+    
     var requestItems : FetchRequest<T>
     private var items: FetchedResults<T>{requestItems.wrappedValue}
     typealias T = CoreDataSchemaEntity
@@ -29,21 +31,14 @@ struct CoreDataSchemaEntityWrapperView: View {
             SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: item.converter.schemaEntity
                                                                                          , instanceEntities: item.converter.instanceEntities
                                                                                          , schemaRelationPairs: item.converter.schemaRelationPairs
-                                                                                         , instanceRelationPairs: [])
-                                                     , reducer: SchemaEntityFeature(dataAgent: .init(createInstance: createInstance, createRelation: createRelation))))
+                                                                                         , instanceRelationPairs: item.converter.instanceRelationPairs)
+                                                 , reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent
+                                                            //.init(createInstance: createInstance, createRelation: createRelation)
+                                                                                   )))
            
         }
     }
-    func createInstance(of schema: SchemaEntity){
-        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
-        let coreDataSchemaEntity : CoreDataSchemaEntity = viewContext.getFetchResultByUUID(uuid: schema.id)
-        CoreDataInstanceEntity.createInstance(of: coreDataSchemaEntity, viewContext: viewContext)
-    }
-    func createRelation(of schema: SchemaEntity){
-        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
-        let coreDataSchemaEntity : CoreDataSchemaEntity = viewContext.getFetchResultByUUID(uuid: schema.id)
-        coreDataSchemaEntity.createPairedSchema(viewContext: viewContext)
-    }
+    
     //createPairedSchema
 }
 
@@ -52,6 +47,7 @@ struct CoreDataSchemaEntityWrapperView_Previews: PreviewProvider {
         Form{
             CoreDataSchemaEntityWrapperView(uuid: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!)
         }
+        .environment(\.dbrainDataAgent, PersistenceController.previewByOption(option: .singleSchemaEntity).container.viewContext.dataAgent)
             .environment(\.managedObjectContext, PersistenceController.previewByOption(option: .singleSchemaEntity).container.viewContext)
     }
 }

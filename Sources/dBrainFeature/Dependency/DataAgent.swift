@@ -8,6 +8,31 @@
 import Foundation
 import CoreData
 import ComposableArchitecture
+import SwiftUI
+
+public struct dBrainDataAgent: EnvironmentKey {
+    public static let defaultValue = dBrainDataAgent()
+    
+    public var schemaEntityFeatureDataAgent : SchemaEntityFeature.DataAgent
+    public var instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent
+    public var schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent
+    
+    public init(schemaEntityFeatureDataAgent: SchemaEntityFeature.DataAgent =  .init(createInstance: {_ in }, createRelation: {_ in })
+                , instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent = .init()
+                ,schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent = .init(createRelatedInstance: {_,_,_  in})
+    ) {
+        self.schemaEntityFeatureDataAgent = schemaEntityFeatureDataAgent
+        self.instanceEntityFeatureDataAgent = instanceEntityFeatureDataAgent
+        self.schemaRelationPairElementFeatureDataAgent = schemaRelationPairElementFeatureDataAgent
+    }
+    
+}
+public extension EnvironmentValues {
+    var dbrainDataAgent: dBrainDataAgent {
+        get { self[dBrainDataAgent.self] }
+        set { self[dBrainDataAgent.self] = newValue }
+  }
+}
 
 //public protocol DataSource{
 //    mutating func createInstance(of schema: SchemaEntity)

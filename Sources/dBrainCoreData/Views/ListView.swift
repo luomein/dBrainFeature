@@ -32,7 +32,7 @@ public struct ListView: View {
                 DisclosureGroup {
                     CoreDataSchemaEntityWrapperView(uuid: item.id!)
                 } label: {
-                    Text(item.name!)
+                    Text(item.name! + " \(item.id!.uuidString)")
                 }
 
                 
@@ -43,9 +43,11 @@ public struct ListView: View {
 
 struct ListView_Previews: PreviewProvider {
     static var previews: some View {
+        let viewContext = PersistenceController.previewByOption(option: .singleInstanceEntity).container.viewContext
         NavigationView {
             ListView()
         }
-            .environment(\.managedObjectContext, PersistenceController.previewByOption(option: .singleInstanceEntity).container.viewContext)
+        .environment(\.dbrainDataAgent,  viewContext.dataAgent)
+            .environment(\.managedObjectContext, viewContext)
     }
 }
