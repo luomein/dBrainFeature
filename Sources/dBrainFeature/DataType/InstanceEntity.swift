@@ -30,6 +30,9 @@ public struct InstanceRelationPair: Equatable, Identifiable{
         self.elements = elements
         self.schemaID = schemaID
     }
+    public func hasInstance(instance: InstanceEntity)->Bool{
+        return elements.first(where: {$0.instanceID == instance.id}) != nil
+    }
 }
 
 public struct InstanceRelationPairElement: Equatable, Identifiable{

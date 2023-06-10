@@ -24,11 +24,14 @@ struct CoreDataSchemaEntityWrapperView: View {
     var body: some View {
         if let item = items.first
         {
-            let instanceEntities : IdentifiedArrayOf<InstanceEntity> = .init(uniqueElements: item.coreDataInstanceEntities?.map({.init(id:$0.id!, schemaID: $0.schemaID)}) ?? [])
-            SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: .init(id:item.id!, name: item.name!)
-                                                                                         , instanceEntities: instanceEntities
-                                                                                         , schemaRelationPairs: [], instanceRelationPairs: [])
-                                                 , reducer: SchemaEntityFeature(dataAgent: .init(createInstance: createInstance))))
+            
+            
+            SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: item.converter.schemaEntity
+                                                                                         , instanceEntities: item.converter.instanceEntities
+                                                                                         , schemaRelationPairs: item.converter.schemaRelationPairs
+                                                                                         , instanceRelationPairs: [])
+                                                     , reducer: SchemaEntityFeature(dataAgent: .init(createInstance: createInstance, createRelation: createRelation))))
+           
         }
     }
     func createInstance(of schema: SchemaEntity){
@@ -36,11 +39,19 @@ struct CoreDataSchemaEntityWrapperView: View {
         let coreDataSchemaEntity : CoreDataSchemaEntity = viewContext.getFetchResultByUUID(uuid: schema.id)
         CoreDataInstanceEntity.createInstance(of: coreDataSchemaEntity, viewContext: viewContext)
     }
+    func createRelation(of schema: SchemaEntity){
+        //dataSource.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
+        let coreDataSchemaEntity : CoreDataSchemaEntity = viewContext.getFetchResultByUUID(uuid: schema.id)
+        coreDataSchemaEntity.createPairedSchema(viewContext: viewContext)
+    }
+    //createPairedSchema
 }
 
 struct CoreDataSchemaEntityWrapperView_Previews: PreviewProvider {
     static var previews: some View {
-        CoreDataSchemaEntityWrapperView(uuid: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!)
+        Form{
+            CoreDataSchemaEntityWrapperView(uuid: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!)
+        }
             .environment(\.managedObjectContext, PersistenceController.previewByOption(option: .singleSchemaEntity).container.viewContext)
     }
 }

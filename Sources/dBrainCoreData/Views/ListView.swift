@@ -27,8 +27,15 @@ public struct ListView: View {
             }
 
             ForEach(items, id: \.self) { item in
-                CoreDataIDWrapperView<SchemaEntityView,CoreDataSchemaEntity>(uuid: item.id!
-                                                                                 , componentView: SchemaEntityView.init, selectItem: $selectItem)
+//                CoreDataIDWrapperView<SchemaEntityView,CoreDataSchemaEntity>(uuid: item.id!
+//                                                                                 , componentView: SchemaEntityView.init, selectItem: $selectItem)
+                DisclosureGroup {
+                    CoreDataSchemaEntityWrapperView(uuid: item.id!)
+                } label: {
+                    Text(item.name!)
+                }
+
+                
             }
         }
     }
