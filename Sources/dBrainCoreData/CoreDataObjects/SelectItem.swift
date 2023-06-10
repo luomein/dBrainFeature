@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SelectItem{
+public struct SelectItem: Equatable, Hashable{
     public var coreDataSchemaEntity : CoreDataSchemaEntity?
     public var coreDataInstanceEntity : CoreDataInstanceEntity?
     public var coreDataSchemaRelationPairElement : CoreDataSchemaRelationPairElement?

@@ -72,7 +72,25 @@ struct TestView: View {
 @available(macOS 11.0, *)
 struct TestView_Previews: PreviewProvider {
     static var previews: some View {
-        TestView()
+        //TestView()
+        Group{
+            DisclosureGroup {
+                List{
+                    Text("4324")
+                    Text("4324")
+                }
+            } label: {
+                Text("4324")
+            }
+            DisclosureGroup {
+                List{
+                    Text("4324")
+                    Text("4324")
+                }
+            } label: {
+                Text("4324")
+            }
+        }
             .environment(\.managedObjectContext, PersistenceController.previewByOption(option: .singleInstanceEntity).container.viewContext)
     }
 }

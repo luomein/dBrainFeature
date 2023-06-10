@@ -25,26 +25,7 @@ extension CoreDataInstanceEntity:CoreDataProperty{
 //        return "relationPairElements"
 //    }
 }
-public extension NSManagedObjectContext{
-    public static func getFetchRequestByUUID<T:CoreDataProperty>(uuid: UUID)->NSFetchRequest<T> where T:NSManagedObject{
-        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
-        fetchRequest.sortDescriptors = []
-        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
-        
-        return fetchRequest
-//        let item = try! viewContext.fetch(fetchRequest).first!
-//        return item
-    }
-    public func getFetchResultByUUID<T:CoreDataProperty>(uuid: UUID)->T where T:NSManagedObject{
-//        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
-//        fetchRequest.sortDescriptors = []
-//        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
-        let fetchRequest : NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
-        
-        let item = try! self.fetch(fetchRequest).first!
-        return item
-    }
-}
+
 public extension CoreDataInstanceEntity{
     var schemaID : UUID{
         return self.schema!.id!

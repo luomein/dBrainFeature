@@ -8,7 +8,7 @@
 import Foundation
 import ComposableArchitecture
 
-public struct InstanceEntity: Equatable, Identifiable{
+public struct InstanceEntity: Equatable, Identifiable, Hashable{
     public var id: UUID
     //public var schema: SchemaEntity
     public var schemaID : SchemaEntity.ID
