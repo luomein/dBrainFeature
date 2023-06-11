@@ -11,10 +11,10 @@ import dBrainFeature
 import ComposableArchitecture
 import IdentifiedCollections
 
-struct CoreDataSchemaEntityWrapperView: View {
+public struct CoreDataSchemaEntityWrapperView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dbrainDataAgent) var dataAgent
-    
+    @State var navPath = [SchemaEntityFeatureView.StackNavPath]()
     var requestItems : FetchRequest<T>
     private var items: FetchedResults<T>{requestItems.wrappedValue}
     typealias T = CoreDataSchemaEntity
@@ -23,18 +23,26 @@ struct CoreDataSchemaEntityWrapperView: View {
         let fetchRequest :NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
         self.requestItems = .init(fetchRequest: fetchRequest)
     }
-    var body: some View {
+    public var body: some View {
         if let item = items.first
         {
+            NavigationStack(path: $navPath) {
+                SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: item.converter.schemaEntity
+                                                                                             , instanceEntities: item.converter.instanceEntities
+                                                                                             , schemaRelationPairs: item.converter.schemaRelationPairs
+                                                                                             , instanceRelationPairs: item.converter.instanceRelationPairs)
+                                                     , reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent
+                                                                //.init(createInstance: createInstance, createRelation: createRelation)
+                                                                                       )))
+                .navigationDestination(for: SchemaEntityFeatureView.StackNavPath.self) { destination in
+                    switch destination{
+                    case .SchemaEntitySelectToPairFeatureView(let uuid):
+                        CoreDataSchemaEntitySelectToPairWrapperView(uuid: uuid)
+                    }
+                }
+            }
             
             
-            SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: item.converter.schemaEntity
-                                                                                         , instanceEntities: item.converter.instanceEntities
-                                                                                         , schemaRelationPairs: item.converter.schemaRelationPairs
-                                                                                         , instanceRelationPairs: item.converter.instanceRelationPairs)
-                                                 , reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent
-                                                            //.init(createInstance: createInstance, createRelation: createRelation)
-                                                                                   )))
            
         }
     }

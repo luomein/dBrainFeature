@@ -22,22 +22,31 @@ struct InstanceEntityFeatureView: View {
                     SchemaRelationPairElementFeatureView(store: .init(initialState: viewStore.state.getSubState(of: schemaRelationPairElement), reducer: SchemaRelationPairElementFeature(dataAgent: dataAgent.schemaRelationPairElementFeatureDataAgent)))
                 })
             } label: {
-                Text(viewStore.instanceEntity.id.uuidString)
+                HStack{
+                    Text(viewStore.instanceEntity.id.uuidString)
+                    Button {
+                        viewStore.send(.delete)
+                    } label: {
+                        Text("delete")
+                    }
+                    .buttonStyle(.plain)
+
+                }
             }
         }
     }
 }
-struct InstanceEntityFeatureWrapperView: View {
-    @State var dataSource = InstanceEntityFeature.State(schemaEntity: .init(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!, name: "test")
-                                                        , instanceEntity: .init(id: UUID(), schemaID: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!), schemaRelationPairs: [], instanceRelationPairs: [])
-    var body: some View {
-        Form{
-            InstanceEntityFeatureView(store: .init(initialState: dataSource, reducer: InstanceEntityFeature(dataAgent: .init())))
-        }
-    }
-}
-struct InstanceEntityFeatureView_Previews: PreviewProvider {
-    static var previews: some View {
-        InstanceEntityFeatureWrapperView()
-    }
-}
+//struct InstanceEntityFeatureWrapperView: View {
+//    @State var dataSource = InstanceEntityFeature.State(schemaEntity: .init(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!, name: "test")
+//                                                        , instanceEntity: .init(id: UUID(), schemaID: UUID(uuidString: "00000000-0000-0000-0000-000000000000" )!), schemaRelationPairs: [], instanceRelationPairs: [])
+//    var body: some View {
+//        Form{
+//            InstanceEntityFeatureView(store: .init(initialState: dataSource, reducer: InstanceEntityFeature(dataAgent: .init())))
+//        }
+//    }
+//}
+//struct InstanceEntityFeatureView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        InstanceEntityFeatureWrapperView()
+//    }
+//}

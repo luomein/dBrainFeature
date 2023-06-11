@@ -57,10 +57,14 @@ public struct SchemaEntityFeature: ReducerProtocol{
     public struct DataAgent{
         var createInstance : (SchemaEntity)->Void
         var createRelation : (SchemaEntity)->Void
+        var deleteSchema: (SchemaEntity)->Void
         public init(createInstance: @escaping (SchemaEntity) -> Void,
-                    createRelation: @escaping (SchemaEntity) -> Void) {
+                    createRelation: @escaping (SchemaEntity) -> Void,
+                    deleteSchema: @escaping (SchemaEntity) -> Void
+        ) {
             self.createInstance = createInstance
             self.createRelation = createRelation
+            self.deleteSchema = deleteSchema
         }
     }
     public var dataAgent : DataAgent
@@ -68,6 +72,7 @@ public struct SchemaEntityFeature: ReducerProtocol{
     public enum Action:Equatable{
         case createInstance
         case createRelation
+        case delete
     }
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
@@ -76,6 +81,8 @@ public struct SchemaEntityFeature: ReducerProtocol{
                 dataAgent.createInstance(state.schemaEntity)
             case .createRelation:
                 dataAgent.createRelation(state.schemaEntity)
+            case .delete:
+                dataAgent.deleteSchema(state.schemaEntity)
             }
             return .none
         }

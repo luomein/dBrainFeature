@@ -42,7 +42,7 @@ public struct ListView: View {
         .navigationDestination(for: SchemaEntityFeatureView.StackNavPath.self) { destination in
             switch destination{
             case .SchemaEntitySelectToPairFeatureView(let uuid):
-                SchemaEntitySelectToPairFeatureView(store: .init(initialState: .init(schemaEntity: .init(id: uuid, name: ""), allSchemaEntities: .init(uniqueElements:  items.map({$0.converter.schemaEntity}) ) ), reducer: SchemaEntitySelectToPairFeature(dataAgent: dataAgent.schemaEntitySelectToPairFeatureDataAgent)))
+                CoreDataSchemaEntitySelectToPairWrapperView(uuid: uuid)
             }
         }
     }

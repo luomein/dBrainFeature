@@ -4,31 +4,31 @@
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isPinned" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="relationPairElements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="instance" inverseEntity="CoreDataInstanceRelationPairElement"/>
+        <relationship name="relationPairElements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="instance" inverseEntity="CoreDataInstanceRelationPairElement"/>
         <relationship name="schema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaEntity" inverseName="instances" inverseEntity="CoreDataSchemaEntity"/>
     </entity>
     <entity name="CoreDataInstanceRelationPair" representedClassName="CoreDataInstanceRelationPair" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="elements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="pair" inverseEntity="CoreDataInstanceRelationPairElement"/>
+        <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="pair" inverseEntity="CoreDataInstanceRelationPairElement"/>
         <relationship name="schema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaRelationPair" inverseName="instances" inverseEntity="CoreDataSchemaRelationPair"/>
     </entity>
     <entity name="CoreDataInstanceRelationPairElement" representedClassName="CoreDataInstanceRelationPairElement" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="instance" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataInstanceEntity" inverseName="relationPairElements" inverseEntity="CoreDataInstanceEntity"/>
-        <relationship name="pair" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPair" inverseName="elements" inverseEntity="CoreDataInstanceRelationPair"/>
+        <relationship name="pair" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataInstanceRelationPair" inverseName="elements" inverseEntity="CoreDataInstanceRelationPair"/>
         <relationship name="schema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaRelationPairElement" inverseName="instances" inverseEntity="CoreDataSchemaRelationPairElement"/>
     </entity>
     <entity name="CoreDataSchemaEntity" representedClassName="CoreDataSchemaEntity" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="instances" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceEntity" inverseName="schema" inverseEntity="CoreDataInstanceEntity"/>
-        <relationship name="relationPairElements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataSchemaRelationPairElement" inverseName="schema" inverseEntity="CoreDataSchemaRelationPairElement"/>
+        <relationship name="instances" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CoreDataInstanceEntity" inverseName="schema" inverseEntity="CoreDataInstanceEntity"/>
+        <relationship name="relationPairElements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CoreDataSchemaRelationPairElement" inverseName="schema" inverseEntity="CoreDataSchemaRelationPairElement"/>
         <relationship name="schemaEntityProperties" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SchemaEntityProperties" inverseName="schemaEntity" inverseEntity="SchemaEntityProperties"/>
         <relationship name="toRelations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SchemaEntityRelations" inverseName="toSchemaEntity" inverseEntity="SchemaEntityRelations"/>
     </entity>
     <entity name="CoreDataSchemaRelationPair" representedClassName="CoreDataSchemaRelationPair" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="elements" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataSchemaRelationPairElement" inverseName="pair" inverseEntity="CoreDataSchemaRelationPairElement"/>
+        <relationship name="elements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CoreDataSchemaRelationPairElement" inverseName="pair" inverseEntity="CoreDataSchemaRelationPairElement"/>
         <relationship name="instances" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPair" inverseName="schema" inverseEntity="CoreDataInstanceRelationPair"/>
     </entity>
     <entity name="CoreDataSchemaRelationPairElement" representedClassName="CoreDataSchemaRelationPairElement" syncable="YES" codeGenerationType="class">
@@ -36,7 +36,7 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="instances" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CoreDataInstanceRelationPairElement" inverseName="schema" inverseEntity="CoreDataInstanceRelationPairElement"/>
-        <relationship name="pair" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaRelationPair" inverseName="elements" inverseEntity="CoreDataSchemaRelationPair"/>
+        <relationship name="pair" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CoreDataSchemaRelationPair" inverseName="elements" inverseEntity="CoreDataSchemaRelationPair"/>
         <relationship name="schema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CoreDataSchemaEntity" inverseName="relationPairElements" inverseEntity="CoreDataSchemaEntity"/>
     </entity>
     <entity name="EntityRelationCouple" representedClassName="EntityRelationCouple" syncable="YES" codeGenerationType="class">

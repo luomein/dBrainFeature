@@ -18,9 +18,9 @@ public struct dBrainDataAgent: EnvironmentKey {
     public var schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent
     public var schemaEntitySelectToPairFeatureDataAgent : SchemaEntitySelectToPairFeature.DataAgent
     
-    public init(schemaEntityFeatureDataAgent: SchemaEntityFeature.DataAgent =  .init(createInstance: {_ in }, createRelation: {_ in })
-                , instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent = .init()
-                ,schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent = .init(createRelatedInstance: {_,_,_  in})
+    public init(schemaEntityFeatureDataAgent: SchemaEntityFeature.DataAgent =  .init(createInstance: {_ in }, createRelation: {_ in }, deleteSchema: {_ in })
+                , instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent = .init(deleteInstance: {_ in})
+                ,schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent = .init(createRelatedInstance: {_,_,_  in}, delete: {_ in })
                 ,schemaEntitySelectToPairFeatureDataAgent:SchemaEntitySelectToPairFeature.DataAgent = .init(createRelation: {_,_ in})
     ) {
         self.schemaEntityFeatureDataAgent = schemaEntityFeatureDataAgent

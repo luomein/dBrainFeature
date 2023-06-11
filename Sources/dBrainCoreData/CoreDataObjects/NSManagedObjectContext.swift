@@ -12,10 +12,28 @@ import dBrainFeature
 
 public extension NSManagedObjectContext{
     var dataAgent : dBrainDataAgent{
-        return .init(schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation)
-                     , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance:  createRelatedInstance )
+        return .init(schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation, deleteSchema: delete)
+                     , instanceEntityFeatureDataAgent : .init(deleteInstance: delete )
+                     , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance:  createRelatedInstance, delete: delete )
                      , schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelation)
         )
+    }
+//    func deleteGeneric<T:Identifiable, M:NSManagedObject>(of : T)->M? where M:CoreDataProperty{
+//        let item : M = self.getFetchResultByUUID(uuid: of.id as! UUID)
+//        self.delete(item)
+//        return nil
+//    }
+    func delete(of : SchemaEntity){
+        let item : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: of.id)
+        self.delete(item)
+    }
+    func delete(of : InstanceEntity){
+        let item : CoreDataInstanceEntity = self.getFetchResultByUUID(uuid: of.id)
+        self.delete(item)
+    }
+    func delete(of : SchemaRelationPair){
+        let item : CoreDataSchemaRelationPair = self.getFetchResultByUUID(uuid: of.id)
+        self.delete(item)
     }
     func createRelatedInstance(of pairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity){
         let instance : CoreDataInstanceEntity = self.getFetchResultByUUID(uuid: instance.id)

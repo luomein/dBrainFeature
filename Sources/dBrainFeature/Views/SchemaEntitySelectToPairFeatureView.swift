@@ -16,7 +16,7 @@ public struct SchemaEntitySelectToPairFeatureView: View {
     }
     public var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            List(viewStore.allSchemaEntities,selection: viewStore.binding(get: \.selectedSchemaEntities, send: SchemaEntitySelectToPairFeature.Action.selectSchemas)){schemaOption in
+            List(viewStore.allSchemaEntities,id: \.self,selection: viewStore.binding(get: \.selectedSchemaEntities, send: SchemaEntitySelectToPairFeature.Action.selectSchemas)){schemaOption in
                 Text(schemaOption.name)
             }
             .onDisappear{

@@ -54,10 +54,10 @@ public struct InstanceEntityFeature: ReducerProtocol{
         }
     }
     public struct DataAgent{
-        public init(){
-            
+        public init(deleteInstance : @escaping  (InstanceEntity)->Void){
+            self.deleteInstance = deleteInstance
         }
-//        var createRelatedInstance : (SchemaRelationPairElement,InstanceEntity)->Void
+        var deleteInstance : (InstanceEntity)->Void
 //        public init(createRelatedInstance: @escaping (SchemaRelationPairElement,InstanceEntity) -> Void) {
 //            self.createRelatedInstance = createRelatedInstance
 //        }
@@ -66,13 +66,14 @@ public struct InstanceEntityFeature: ReducerProtocol{
     
     public enum Action:Equatable{
         //case createRelatedInstance
+        case delete
     }
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
-//            switch action{
-//            case .createRelatedInstance:
-//                dataAgent.createRelatedInstance(state.schemaEntity)
-//            }
+            switch action{
+            case .delete:
+                dataAgent.deleteInstance(state.instanceEntity)
+            }
             return .none
         }
     }

@@ -19,41 +19,49 @@ public struct SchemaEntityFeatureView: View {
     }
     public var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            DisclosureGroup {
+            Group{
                 Button {
-                    viewStore.send(.createInstance)
+                    viewStore.send(.delete)
                 } label: {
-                    Text("createInstance")
+                    Text("delete")
                 }
-                
-                ForEach(viewStore.instanceEntities, content: { instance in
-                    //Text(instance.id.uuidString)
-                    InstanceEntityFeatureView(store: .init(initialState: viewStore.state.getSubState(of: instance)
-                                                           , reducer: InstanceEntityFeature(dataAgent: dataAgent.instanceEntityFeatureDataAgent)))
-                })
-            } label: {
-                Text("Instance")
-            }
-            DisclosureGroup {
-                 
+                .buttonStyle(.plain)
+                DisclosureGroup {
+                    Button {
+                        viewStore.send(.createInstance)
+                    } label: {
+                        Text("createInstance")
+                    }
+                    .buttonStyle(.plain)
+                    ForEach(viewStore.instanceEntities, content: { instance in
+                        //Text(instance.id.uuidString)
+                        InstanceEntityFeatureView(store: .init(initialState: viewStore.state.getSubState(of: instance)
+                                                               , reducer: InstanceEntityFeature(dataAgent: dataAgent.instanceEntityFeatureDataAgent)))
+                    })
+                } label: {
+                    Text("Instance")
+                }
+                DisclosureGroup {
+                    
                     Button {
                         viewStore.send(.createRelation)
                     } label: {
                         Text("create")
                     }
-                NavigationLink(value: StackNavPath.SchemaEntitySelectToPairFeatureView(viewStore.schemaEntity.id)) {
-                    Text("select")
+                    .buttonStyle(.plain)
+                    NavigationLink(value: StackNavPath.SchemaEntitySelectToPairFeatureView(viewStore.schemaEntity.id)) {
+                        Text("select")
+                    }
+                    .buttonStyle(.plain)
+                    ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
+                        
+                        Text(schemaRelationPairElement.schemaID.uuidString)
+                    })
+                } label: {
+                    Text("Relation")
                 }
-               
-                ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
-                    
-                    Text(schemaRelationPairElement.schemaID.uuidString)
-                })
-            } label: {
-                Text("Relation")
+                
             }
-                 
-            
         }
     }
 }
@@ -67,10 +75,13 @@ public struct SchemaEntityFeatureDataSourceView: View {
     
     public var body: some View {
         SchemaEntityFeatureWrapperView(dataSource: $dataSource)
-        .environment(\.dbrainDataAgent, dBrainDataAgent(schemaEntityFeatureDataAgent:.init(createInstance: createInstance, createRelation: createRelation)
-                                                        , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance)
+            .environment(\.dbrainDataAgent, dBrainDataAgent(schemaEntityFeatureDataAgent:.init(createInstance: createInstance, createRelation: createRelation, deleteSchema: {_ in})
+                                                        , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair)
                                                        ))
        
+    }
+    func deleteSchemaRelationPair(pair: SchemaRelationPair){
+        dataSource.schemaRelationPairs.remove(id: pair.id)
     }
     func createRelatedInstance(of schemaRelationPairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity){
         let newInstance = InstanceEntity(id: UUID(), schemaID: schemaRelationPairElement.schemaID)

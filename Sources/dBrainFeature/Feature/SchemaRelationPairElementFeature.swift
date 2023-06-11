@@ -49,15 +49,19 @@ public struct SchemaRelationPairElementFeature: ReducerProtocol{
     }
     public struct DataAgent{
          var createRelatedInstance : (SchemaRelationPairElement, SchemaRelationPair ,InstanceEntity)->Void
-        public init(createRelatedInstance: @escaping (SchemaRelationPairElement, SchemaRelationPair ,InstanceEntity) -> Void) {
+        var delete : (SchemaRelationPair)->Void
+        public init(createRelatedInstance: @escaping (SchemaRelationPairElement, SchemaRelationPair ,InstanceEntity) -> Void,
+                    delete: @escaping (  SchemaRelationPair  ) -> Void) {
             self.createRelatedInstance = createRelatedInstance
+            self.delete = delete
         }
     }
     public var dataAgent : DataAgent
     
     public enum Action:Equatable{
         case createRelatedInstance
-        
+        case delete
+        case removeRelation(InstanceRelationPair)
     }
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
@@ -66,6 +70,10 @@ public struct SchemaRelationPairElementFeature: ReducerProtocol{
                 dataAgent.createRelatedInstance(state.schemaRelationPairElement
                                                 , state.schemaRelationPair
                                                 , state.instanceEntity)
+            case.delete:
+                dataAgent.delete(state.schemaRelationPair)
+            case .removeRelation(let pair):
+                fatalError()
             }
             return .none
         }
