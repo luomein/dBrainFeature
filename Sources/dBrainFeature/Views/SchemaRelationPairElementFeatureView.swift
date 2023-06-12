@@ -22,12 +22,14 @@ struct SchemaRelationPairElementFeatureView: View {
                 } label: {
                     Text("createInstance")
                 }
+                .buttonStyle(.plain)
                 Button{
                     viewStore.send(.delete)
                 }
             label: {
                 Text("delete")
             }
+            .buttonStyle(.plain)
                 ForEach(instanceElements) { instanceElement in
                     Text(instanceElement.instanceID.uuidString)
                 }

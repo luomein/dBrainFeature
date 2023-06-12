@@ -23,6 +23,13 @@ struct InstanceEntityFeatureView: View {
                 })
             } label: {
                 HStack{
+                    Button {
+                        viewStore.send(.select(!viewStore.instanceEntity.isSelected))
+                    } label: {
+                        Text(viewStore.instanceEntity.isSelected ? "☑︎" : "☐").font(.headline)
+                    }
+                    .buttonStyle(.plain)
+                    
                     Text(viewStore.instanceEntity.id.uuidString)
                     Button {
                         viewStore.send(.delete)

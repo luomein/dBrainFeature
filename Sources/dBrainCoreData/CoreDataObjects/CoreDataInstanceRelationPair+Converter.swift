@@ -29,4 +29,21 @@ public extension CoreDataInstanceRelationPair{
     var converter: Converter{
         return .init(item: self)
     }
+    struct CytoscapeConverter{
+        public var instanceRelationPairEdge : InstanceRelationPairEdge{
+            return .init(data: .init(id: item.id!.uuidString, source: item.coreDataInstanceRelationPairElements![0].instance!.id!.uuidString
+                                     , target: item.coreDataInstanceRelationPairElements![1].instance!.id!.uuidString))
+        }
+        public var cytoscape: Cytoscape{
+            return .init(instanceRelationPairEdge: instanceRelationPairEdge)
+        }
+        public typealias T = CoreDataInstanceRelationPair
+        var item : T
+        public init(item: T) {
+            self.item = item
+        }
+    }
+    var cytoscapeConverter: CytoscapeConverter{
+        return .init(item: self)
+    }
 }

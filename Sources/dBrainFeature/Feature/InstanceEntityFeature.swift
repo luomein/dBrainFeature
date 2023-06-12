@@ -54,9 +54,13 @@ public struct InstanceEntityFeature: ReducerProtocol{
         }
     }
     public struct DataAgent{
-        public init(deleteInstance : @escaping  (InstanceEntity)->Void){
+        public init(deleteInstance : @escaping  (InstanceEntity)->Void,
+                    isSelected : @escaping (InstanceEntity,Bool)->Void){
+            self.isSelected = isSelected
             self.deleteInstance = deleteInstance
         }
+        
+        var isSelected : (InstanceEntity,Bool)->Void
         var deleteInstance : (InstanceEntity)->Void
 //        public init(createRelatedInstance: @escaping (SchemaRelationPairElement,InstanceEntity) -> Void) {
 //            self.createRelatedInstance = createRelatedInstance
@@ -67,12 +71,15 @@ public struct InstanceEntityFeature: ReducerProtocol{
     public enum Action:Equatable{
         //case createRelatedInstance
         case delete
+        case select(Bool)
     }
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
             switch action{
             case .delete:
                 dataAgent.deleteInstance(state.instanceEntity)
+            case .select(let value):
+                dataAgent.isSelected(state.instanceEntity,value)
             }
             return .none
         }

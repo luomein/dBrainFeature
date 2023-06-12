@@ -13,7 +13,7 @@ import dBrainFeature
 public extension NSManagedObjectContext{
     var dataAgent : dBrainDataAgent{
         return .init(schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation, deleteSchema: delete)
-                     , instanceEntityFeatureDataAgent : .init(deleteInstance: delete )
+                     , instanceEntityFeatureDataAgent : .init(deleteInstance: delete, isSelected: instanceSelected )
                      , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance:  createRelatedInstance, delete: delete )
                      , schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelation)
         )
@@ -23,6 +23,10 @@ public extension NSManagedObjectContext{
 //        self.delete(item)
 //        return nil
 //    }
+    func instanceSelected(of : InstanceEntity, value: Bool){
+        let item : CoreDataInstanceEntity = self.getFetchResultByUUID(uuid: of.id)
+        item.isSelected = value
+    }
     func delete(of : SchemaEntity){
         let item : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: of.id)
         self.delete(item)
@@ -49,10 +53,14 @@ public extension NSManagedObjectContext{
         CoreDataInstanceEntity.createInstance(of: coreDataSchemaEntity, viewContext: self)
     }
     func createRelation(of schema: SchemaEntity, to schemas: Set<SchemaEntity>){
-        let coreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: schema.id)
+        guard let coreDataSchemaEntity : CoreDataSchemaEntity = self.getOptionalFetchResultByUUID(uuid: schema.id) else{
+            return
+        }
         for selectedSchema in schemas{
-            let pairCoreDataSchemaEntity : CoreDataSchemaEntity = self.getFetchResultByUUID(uuid: selectedSchema.id)
-            coreDataSchemaEntity.createPairedSchema(pair: pairCoreDataSchemaEntity,viewContext: self)
+            if let pairCoreDataSchemaEntity : CoreDataSchemaEntity = self.getOptionalFetchResultByUUID(uuid: selectedSchema.id)
+            {
+                coreDataSchemaEntity.createPairedSchema(pair: pairCoreDataSchemaEntity,viewContext: self)
+            }
         }
     }
     func createRelation(of schema: SchemaEntity){
@@ -92,7 +100,7 @@ extension NSManagedObjectContext : DependencyKey {
 }
 
 public extension NSManagedObjectContext{
-    public static func getFetchRequestByUUID<T:CoreDataProperty>(uuid: UUID)->NSFetchRequest<T> where T:NSManagedObject{
+    static func getFetchRequestByUUID<T:CoreDataProperty>(uuid: UUID)->NSFetchRequest<T> where T:NSManagedObject{
         let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
         fetchRequest.sortDescriptors = []
         fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
@@ -101,13 +109,22 @@ public extension NSManagedObjectContext{
 //        let item = try! viewContext.fetch(fetchRequest).first!
 //        return item
     }
-    public func getFetchResultByUUID<T:CoreDataProperty>(uuid: UUID)->T where T:NSManagedObject{
+    func getFetchResultByUUID<T:CoreDataProperty>(uuid: UUID)->T where T:NSManagedObject{
 //        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
 //        fetchRequest.sortDescriptors = []
 //        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
         let fetchRequest : NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
         
         let item = try! self.fetch(fetchRequest).first!
+        return item
+    }
+    func getOptionalFetchResultByUUID<T:CoreDataProperty>(uuid: UUID)->T? where T:NSManagedObject{
+//        let fetchRequest = NSFetchRequest<T>(entityName: T.entityName )
+//        fetchRequest.sortDescriptors = []
+//        fetchRequest.predicate = NSPredicate(format: "id == %@",  uuid as CVarArg)
+        let fetchRequest : NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
+        
+        let item = try? self.fetch(fetchRequest).first
         return item
     }
 }

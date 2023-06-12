@@ -17,18 +17,31 @@ public struct CoreDataSchemaEntityWrapperView: View {
     @State var navPath = [SchemaEntityFeatureView.StackNavPath]()
     var requestItems : FetchRequest<T>
     private var items: FetchedResults<T>{requestItems.wrappedValue}
+    
+    var requestInstance : FetchRequest<CoreDataInstanceEntity>
+    private var instances: FetchedResults<CoreDataInstanceEntity>{requestInstance.wrappedValue}
+    
     typealias T = CoreDataSchemaEntity
     public init(uuid: UUID)
     {
         let fetchRequest :NSFetchRequest<T> = NSManagedObjectContext.getFetchRequestByUUID(uuid: uuid)
         self.requestItems = .init(fetchRequest: fetchRequest)
+        
+        let instanceFetchRequest = NSFetchRequest<CoreDataInstanceEntity>(entityName: CoreDataInstanceEntity.entityName )
+        instanceFetchRequest.sortDescriptors = []
+        instanceFetchRequest.predicate = NSPredicate(format: "schema.id == %@",  uuid as CVarArg)
+        self.requestInstance = .init(fetchRequest: instanceFetchRequest)
     }
     public var body: some View {
         if let item = items.first
         {
             NavigationStack(path: $navPath) {
                 SchemaEntityFeatureView(store: .init(initialState: SchemaEntityFeature.State(schemaEntity: item.converter.schemaEntity
-                                                                                             , instanceEntities: item.converter.instanceEntities
+                                                                                             , instanceEntities: //item.converter.instanceEntities
+                    .init(uniqueElements:
+                                                                                             instances.map({$0.converter.instanceEntity})
+                          )
+                                                                                             
                                                                                              , schemaRelationPairs: item.converter.schemaRelationPairs
                                                                                              , instanceRelationPairs: item.converter.instanceRelationPairs)
                                                      , reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent

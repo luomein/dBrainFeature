@@ -86,37 +86,5 @@ public extension CoreDataInstanceEntity{
     var coreDataInstanceRelationPairElement : [CoreDataInstanceRelationPairElement]?{
         return relationPairElements?.allObjects.map({$0 as! CoreDataInstanceRelationPairElement})
     }
-    func getRelatedInstance(of schema: CoreDataSchemaEntity,checkedPath : [CoreDataInstanceRelationPairElement]=[] )->[CoreDataInstanceEntity]?{
-        if checkedPath.map({$0.instance!}).contains(self){
-            return nil
-        }
-        var checkedPath = checkedPath
-        var result : Set<CoreDataInstanceEntity> = []
-        if let elements = self.coreDataInstanceRelationPairElement{
-            //print(elements.count)
-            for element in elements {
-                let pairedInstance = element.getPairedElement().instance!
-                //print(pairedInstance.schema?.name!)
-                assert(pairedInstance != self)
-                if checkedPath.map({$0.instance!}).contains(pairedInstance){
-                    continue
-                }
-                else if result.contains(pairedInstance){
-                    continue
-                }
-                else if pairedInstance.schema! == schema{
-                    //result.append(pairedInstance)
-                    //print(result.count)
-                    result.insert(pairedInstance)
-                    //print(result.count)
-                }
-                checkedPath.append(element)
-                if let subResult = pairedInstance.getRelatedInstance(of: schema, checkedPath: checkedPath){
-                    //result.append(contentsOf: subResult)
-                    result = result.union(subResult)
-                }
-            }
-        }
-        return (result.count == 0) ? nil : result.map({$0})
-    }
+    
 }

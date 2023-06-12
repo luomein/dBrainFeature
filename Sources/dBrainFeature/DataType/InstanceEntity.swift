@@ -12,10 +12,12 @@ public struct InstanceEntity: Equatable, Identifiable, Hashable{
     public var id: UUID
     //public var schema: SchemaEntity
     public var schemaID : SchemaEntity.ID
+    public var isSelected : Bool = false
     
-    public init(id: UUID, schemaID: SchemaEntity.ID) {
+    public init(id: UUID, schemaID: SchemaEntity.ID , isSelected : Bool = false) {
         self.id = id
         self.schemaID = schemaID
+        self.isSelected = isSelected
     }
 }
 

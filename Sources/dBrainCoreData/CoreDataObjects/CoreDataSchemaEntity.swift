@@ -30,43 +30,6 @@ public extension CoreDataSchemaEntity{
     var coreDataInstanceEntities: [CoreDataInstanceEntity]?{
         return self.instances?.allObjects.map({$0 as! CoreDataInstanceEntity})
     }
-    func hasRelationWithSchema(schema: CoreDataSchemaEntity, checkedPath : [CoreDataSchemaRelationPairElement] = [], includeSelfRelation: Bool)->Bool{
-        //print("checkedPath", checkedPath)
-        //print(self, self.coreDataSchemaRelationPairElements?.count)
-        if !includeSelfRelation && schema==self{
-            return false
-        }
-        if checkedPath.map({$0.schema!}).contains(self){
-            //print("duplicated")
-            return false
-        }
-        var checkedPath = checkedPath
-        if let elements = self.coreDataSchemaRelationPairElements{
-            for element in elements{
-                let pairedSchema = element.getPairedElement().schema!
-                if checkedPath.map({$0.schema!}).contains(pairedSchema){
-                    //print("duplicated")
-                    continue
-                }
-                else if pairedSchema == schema{
-                    if schema==self{
-                        if includeSelfRelation{
-                            return true
-                        }
-                        else{fatalError()}
-                    }
-                    else{
-                        return true
-                    }
-                }
-                else{
-                    checkedPath.append(element)
-                    if pairedSchema.hasRelationWithSchema(schema: schema, checkedPath: checkedPath, includeSelfRelation: false){return true}
-                }
-            }
-        }
-        return false
-    }
     
     static func createSchema( viewContext: NSManagedObjectContext)->Self{
         let newItem = Self(context: viewContext)
