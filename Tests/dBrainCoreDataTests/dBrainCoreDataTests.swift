@@ -48,7 +48,7 @@ final class dBrainCoreDataTests: XCTestCase {
         let newItem1_1 = newItem1.createRelatedInstance(schemaRelationPairElement: pairSchemaElement2, viewContext: viewContext)
         
         
-        print(instance.getRelatedInstance(of: schema))
+        print(instance.getRelatedInstance())
         //XCTAssertFalse(schema.hasRelationWithSchema(schema: schema3, includeSelfRelation: true))
 //        XCTAssertTrue(schema.hasRelationWithSchema(schema: schema2, includeSelfRelation: true))
     }

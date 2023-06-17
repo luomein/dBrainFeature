@@ -67,14 +67,14 @@ public struct SchemaEntityFeatureView: View {
 }
 public struct SchemaEntityFeatureDataSourceView: View {
 //    var localDataAgent: dBrainDataAgent = .init(schemaEntityFeatureDataAgent:  .init(createInstance: createInstance, createRelation: createRelation))
-    @Environment(\.dbrainDataAgent) var dataAgent
+    //@Environment(\.dbrainDataAgent) var dataAgent
     @State var dataSource = SchemaEntityFeature.State(schemaEntity: .init(id: UUID(), name: "test")
                                                       , instanceEntities: [], schemaRelationPairs: [], instanceRelationPairs: [])
     public init(){
     }
     
     public var body: some View {
-        SchemaEntityFeatureWrapperView(dataSource: $dataSource)
+        SchemaEntityFeatureWrapperView(dataSource: dataSource)
             .environment(\.dbrainDataAgent, dBrainDataAgent(schemaEntityFeatureDataAgent:.init(createInstance: createInstance, createRelation: createRelation, deleteSchema: {_ in})
                                                         , schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair)
                                                        ))
@@ -107,12 +107,15 @@ public struct SchemaEntityFeatureDataSourceView: View {
         ]))
     }
 }
-struct SchemaEntityFeatureWrapperView: View {
+public struct SchemaEntityFeatureWrapperView: View {
 //    var localDataAgent: dBrainDataAgent = .init(schemaEntityFeatureDataAgent:  .init(createInstance: createInstance, createRelation: createRelation))
     @Environment(\.dbrainDataAgent) var dataAgent
-    @Binding var dataSource : SchemaEntityFeature.State
-    var body: some View {
-        Form{
+    var dataSource : SchemaEntityFeature.State
+    public init(dataSource: SchemaEntityFeature.State) {
+        self.dataSource = dataSource
+    }
+    public var body: some View {
+        Group{
             SchemaEntityFeatureView(store: .init(initialState: dataSource, reducer: SchemaEntityFeature(dataAgent: dataAgent.schemaEntityFeatureDataAgent
                                                                                                        )))
         }

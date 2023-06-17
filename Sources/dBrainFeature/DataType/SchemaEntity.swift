@@ -34,6 +34,9 @@ public struct SchemaRelationPair: Equatable, Identifiable{
         self.id = id
         self.elements = elements
     }
+    public func hasSchema(schemaEntity: SchemaEntity)->Bool{
+        return elements.first(where: {$0.schemaID == schemaEntity.id}) != nil
+    }
 }
 
 public struct SchemaRelationPairElement: Equatable, Identifiable{

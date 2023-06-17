@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+//import SwiftUICytoscape
 
 public struct InstanceEntity: Equatable, Identifiable, Hashable{
     public var id: UUID
