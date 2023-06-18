@@ -46,6 +46,9 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
             public var schemaRelationPairs : IdentifiedArrayOf<SchemaRelationPair> = []
             public var instanceRelationPairs: IdentifiedArrayOf<InstanceRelationPair> = []
          
+        public func getSubStateForSelectSchemaPair(of schemaEntity: SchemaEntity)->SchemaEntitySelectToPairFeature.State{
+            return .init(schemaEntity: schemaEntity, allSchemaEntities: schemaEntities)
+        }
         public func getSubState(of schemaEntity: SchemaEntity)->SchemaEntityFeature.State{
             
             let schemaRelationPairs = schemaRelationPairs.filter({$0.hasSchema(schemaEntity: schemaEntity)} )
@@ -60,6 +63,10 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
     public enum Action{
         case createSchema
         case createRelation(SchemaEntity)
+        case createRelationPair(SchemaEntity,Set<SchemaEntity>)
+        case informSchemaCreated(SchemaEntity)
+        case informSchemaRelationCreated(SchemaRelationPair)
+        case informSchemaRelationsCreated([SchemaRelationPair])
         case createInstance(SchemaEntity)
         case deleteSchema(SchemaEntity)
         case setInstanceSelected(InstanceEntity,  Bool)
@@ -71,6 +78,12 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
             switch action{
+            case .informSchemaRelationCreated:
+                break
+            case .informSchemaCreated(_):
+                break
+            case .informSchemaRelationsCreated:
+                break
             case .deleteSchemaRelationPair(let pair):
                 deleteSchemaRelationPair(pair: pair, dataSource: &state)
             case .createRelatedInstance(let element, let pair, let instance):
@@ -80,7 +93,9 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
             case .setInstanceSelected(let instance, let isSelected):
                 setInstanceSelected(of: instance, isSelected: isSelected, dataSource: &state)
             case .createSchema:
-                state.schemaEntities.append(.init(id: UUID(), name: "\(Int.random(in: 0...1000))"))
+                let newItem : SchemaEntity = .init(id: UUID(), name: "\(Int.random(in: 0...1000))")
+                state.schemaEntities.append(newItem)
+                return .send(.informSchemaCreated(newItem))
             case .deleteSchema(let schema):
                 let schemaRelationPairs = state.schemaRelationPairs.filter({$0.hasSchema(schemaEntity: schema)} )
                 let instanceRelationPairs = state.instanceRelationPairs.filter({schemaRelationPairs[id:$0.schemaID] != nil})
@@ -91,13 +106,29 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
                 state.schemaEntities.remove(schema)
             case .createInstance(let schema):
                 state.instanceEntities.append(.init(id: UUID(), schemaID: schema.id))
+            case .createRelationPair(let schema1, let schemaSet):
+                var pairs : [SchemaRelationPair] = []
+                for schema2 in schemaSet{
+                    let newPair : SchemaRelationPair = .init(id: UUID(), elements: [
+                        .init(id: UUID(), schemaID: schema1.id)
+                        ,.init(id: UUID(), schemaID: schema2.id)
+                    ])
+                    state.schemaRelationPairs.append(newPair)
+                    pairs.append(newPair)
+                }
+                return .send(.informSchemaRelationsCreated(pairs))
+                
             case .createRelation(let schema):
                 let newSchema = SchemaEntity(id: UUID(), name: "\(Int.random(in: 0...1000))")
                  state.schemaEntities.append(newSchema)
-                state.schemaRelationPairs.append(.init(id: UUID(), elements: [
+                let newPair : SchemaRelationPair = .init(id: UUID(), elements: [
                     .init(id: UUID(), schemaID: schema.id)
                     ,.init(id: UUID(), schemaID: newSchema.id)
-                ]))
+                ])
+                state.schemaRelationPairs.append(newPair)
+                return .concatenate(.send(.informSchemaCreated(newSchema)),
+                                    .send(.informSchemaRelationCreated(newPair))
+                )
             }
             return .none
         }
@@ -134,18 +165,29 @@ public struct SampleStateValueTypeDataSource<T:View, S:Equatable>: View {
             let setInstanceSelected :( InstanceEntity,  Bool)->Void = {viewStore.send(.setInstanceSelected($0, $1))}
             let createRelatedInstance : (SchemaRelationPairElement, SchemaRelationPair, InstanceEntity)->Void = {viewStore.send(.createRelatedInstance($0,$1,$2))}
             let deleteSchemaRelationPair : (SchemaRelationPair)->Void = {viewStore.send(.deleteSchemaRelationPair($0))}
+            let createRelationPair : (SchemaEntity,Set<SchemaEntity>)->Void = {viewStore.send(.createRelationPair($0, $1))}
+            let dataAgent = dBrainDataAgent(
+                schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation, deleteSchema: deleteSchema),
+                instanceEntityFeatureDataAgent: .init(deleteInstance: deleteInstance, isSelected: setInstanceSelected),
+                schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair),
+                schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelationPair)
+            )
             
             Form{
                 
                 ForEach(viewStore.schemaEntities){schemaEntity in
                     componentView(viewStore.state.getSubState(of: schemaEntity) as! S)
-                        .environment(\.dbrainDataAgent,dBrainDataAgent(
-                            schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation, deleteSchema: deleteSchema),
-                            instanceEntityFeatureDataAgent: .init(deleteInstance: deleteInstance, isSelected: setInstanceSelected),
-                            schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair)
-                        ))
+                        .environment(\.dbrainDataAgent,dataAgent)
                 }
                 
+            }
+            .navigationDestination(for: SchemaEntityFeatureView.StackNavPath.self) { destination in
+                switch destination{
+                case .SchemaEntitySelectToPairFeatureView(let uuid):
+                    let schema = viewStore.schemaEntities[id: uuid]!
+                    SchemaEntitySelectToPairFeatureView(store: .init(initialState: viewStore.state.getSubStateForSelectSchemaPair(of: schema), reducer: {SchemaEntitySelectToPairFeature()}))
+                        .environment(\.dbrainDataAgent,dataAgent)
+                }
             }
                     .toolbar {
                         ToolbarItem {

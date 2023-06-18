@@ -10,9 +10,10 @@ import Foundation
 import ComposableArchitecture
 
 public struct SchemaEntitySelectToPairFeature: ReducerProtocol{
-    public init(dataAgent: DataAgent){
-        self.dataAgent = dataAgent
-    }
+//    public init(dataAgent: DataAgent){
+//        self.dataAgent = dataAgent
+//    }
+    public init(){}
     public struct State:Equatable{
         public var  schemaEntity : SchemaEntity
         public var allSchemaEntities : IdentifiedArrayOf<SchemaEntity>
@@ -32,10 +33,10 @@ public struct SchemaEntitySelectToPairFeature: ReducerProtocol{
             self.createRelation = createRelation
         }
     }
-    public var dataAgent : DataAgent
+    //public var dataAgent : DataAgent
     
     public enum Action:Equatable{
-        case createRelation
+        //case createRelation
         case selectSchemas(Set<SchemaEntity>)
     }
     public var body: some ReducerProtocol<State, Action> {
@@ -45,10 +46,10 @@ public struct SchemaEntitySelectToPairFeature: ReducerProtocol{
                 state.selectedSchemaEntities = value
                 print(state.allSchemaEntities)
                 print(state.selectedSchemaEntities,state.selectedSchemaEntities.count)
-            case .createRelation:
-                
-                dataAgent.createRelation(state.schemaEntity,state.selectedSchemaEntities)
-               
+//            case .createRelation:
+//
+//                dataAgent.createRelation(state.schemaEntity,state.selectedSchemaEntities)
+//
             }
             return .none
         }

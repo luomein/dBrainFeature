@@ -34,7 +34,8 @@ public struct CoreDataSchemaEntitySelectToPairWrapperView: View {
         if let item = items.first
         {
             SchemaEntitySelectToPairFeatureView(store: .init(initialState: .init(schemaEntity: item.converter.schemaEntity, allSchemaEntities: .init(uniqueElements: allItems.map({$0.converter.schemaEntity}))
-                                                                                ), reducer: SchemaEntitySelectToPairFeature(dataAgent: dataAgent.schemaEntitySelectToPairFeatureDataAgent)))
+                                                                                ), reducer: SchemaEntitySelectToPairFeature()))
+            
         }
     }
 }
