@@ -172,15 +172,15 @@ public struct SampleStateValueTypeDataSource<T:View, S:Equatable>: View {
                 schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair),
                 schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelationPair)
             )
-            
             Form{
-                
                 ForEach(viewStore.schemaEntities){schemaEntity in
+                    
                     componentView(viewStore.state.getSubState(of: schemaEntity) as! S)
                         .environment(\.dbrainDataAgent,dataAgent)
+                    
                 }
-                
             }
+
             .navigationDestination(for: SchemaEntityFeatureView.StackNavPath.self) { destination in
                 switch destination{
                 case .SchemaEntitySelectToPairFeatureView(let uuid):
