@@ -60,12 +60,12 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
                          , instanceRelationPairs: instanceRelationPairs)
         }
     }
-    public enum Action{
+    public enum Action: Equatable{
         case createSchema
         case createRelation(SchemaEntity)
         case createRelationPair(SchemaEntity,Set<SchemaEntity>)
         case informSchemaCreated(SchemaEntity)
-        case informSchemaRelationCreated(SchemaRelationPair)
+        //case informSchemaRelationCreated(SchemaRelationPair)
         case informSchemaRelationsCreated([SchemaRelationPair])
         case createInstance(SchemaEntity)
         case deleteSchema(SchemaEntity)
@@ -78,8 +78,8 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
             switch action{
-            case .informSchemaRelationCreated:
-                break
+//            case .informSchemaRelationCreated:
+//                break
             case .informSchemaCreated(_):
                 break
             case .informSchemaRelationsCreated:
@@ -127,7 +127,7 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
                 ])
                 state.schemaRelationPairs.append(newPair)
                 return .concatenate(.send(.informSchemaCreated(newSchema)),
-                                    .send(.informSchemaRelationCreated(newPair))
+                                    .send(.informSchemaRelationsCreated([newPair]))
                 )
             }
             return .none
