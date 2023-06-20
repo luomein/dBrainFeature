@@ -10,12 +10,12 @@ import SwiftUI
 import IdentifiedCollections
 import ComposableArchitecture
 
-public extension SampleStateValueTypeDataSourceFeature{
-    func deleteSchemaRelationPair(pair: SchemaRelationPair, dataSource: inout State){
+public extension ValueTypeDataSourceFeature{
+    func deleteSchemaRelationPair(pair: SchemaRelationPair, dataSource: inout ValueTypeDataSource){
        dataSource.instanceRelationPairs.removeAll {$0.schemaID == pair.id}
        dataSource.schemaRelationPairs.remove(id: pair.id)
    }
-    func createRelatedInstance(of schemaRelationPairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity, dataSource: inout State){
+    func createRelatedInstance(of schemaRelationPairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity, dataSource: inout ValueTypeDataSource){
        let newInstance = InstanceEntity(id: UUID(), schemaID: schemaRelationPairElement.schemaID)
        let newPairInstanceElement = InstanceRelationPairElement(id: UUID(), instanceID: newInstance.id, schemaID: schemaRelationPairElement.id)
        
@@ -28,38 +28,18 @@ public extension SampleStateValueTypeDataSourceFeature{
        dataSource.instanceRelationPairs.append(newPairInstance)
    }
    
-   func deleteInstance(of instance: InstanceEntity, dataSource: inout State){
+   func deleteInstance(of instance: InstanceEntity, dataSource: inout ValueTypeDataSource){
        let instanceRelationPairs = dataSource.instanceRelationPairs.filter{$0.hasInstance(instance: instance)}
        dataSource.instanceRelationPairs.removeAll {instanceRelationPairs.contains($0)}
        dataSource.instanceEntities.remove(instance)
    }
-   func setInstanceSelected(of instance: InstanceEntity, isSelected: Bool, dataSource: inout State){
+   func setInstanceSelected(of instance: InstanceEntity, isSelected: Bool, dataSource: inout ValueTypeDataSource){
        dataSource.instanceEntities[id: instance.id]!.isSelected = isSelected
    }
 }
-public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
+public struct ValueTypeDataSourceFeature : ReducerProtocol{
     public init(){}
-    public struct State : Equatable{
-        public init(){}
-            public var  schemaEntities :  IdentifiedArrayOf<SchemaEntity> = []
-            public var instanceEntities : IdentifiedArrayOf<InstanceEntity> = []
-            public var schemaRelationPairs : IdentifiedArrayOf<SchemaRelationPair> = []
-            public var instanceRelationPairs: IdentifiedArrayOf<InstanceRelationPair> = []
-         
-        public func getSubStateForSelectSchemaPair(of schemaEntity: SchemaEntity)->SchemaEntitySelectToPairFeature.State{
-            return .init(schemaEntity: schemaEntity, allSchemaEntities: schemaEntities)
-        }
-        public func getSubState(of schemaEntity: SchemaEntity)->SchemaEntityFeature.State{
-            
-            let schemaRelationPairs = schemaRelationPairs.filter({$0.hasSchema(schemaEntity: schemaEntity)} )
-            let instanceRelationPairs = instanceRelationPairs.filter({schemaRelationPairs[id:$0.schemaID] != nil})
-                                                                
-            return .init(schemaEntity: schemaEntity
-                         , instanceEntities: instanceEntities.filter({$0.schemaID == schemaEntity.id})
-                         , schemaRelationPairs: schemaRelationPairs
-                         , instanceRelationPairs: instanceRelationPairs)
-        }
-    }
+    
     public enum Action: Equatable{
         case createSchema
         case createRelation(SchemaEntity)
@@ -75,7 +55,7 @@ public struct SampleStateValueTypeDataSourceFeature : ReducerProtocol{
         case deleteSchemaRelationPair(SchemaRelationPair)
     }
     
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some ReducerProtocol<ValueTypeDataSource, Action> {
         Reduce{ state, action in
             switch action{
 //            case .informSchemaRelationCreated:
@@ -144,16 +124,17 @@ struct SampleStateValueTypeDataSource_Previews: PreviewProvider {
 }
 
 public struct SampleStateValueTypeDataSource<T:View, S:Equatable>: View {
-    let store : StoreOf<SampleStateValueTypeDataSourceFeature>
+    let store : StoreOf<ValueTypeDataSourceFeature>
+    @Environment(\.openWindow) private var openWindow
 
     var componentView : (S)->T
-    public init(componentView : @escaping (S)->T, store: StoreOf<SampleStateValueTypeDataSourceFeature>? = nil) {
+    public init(componentView : @escaping (S)->T, store: StoreOf<ValueTypeDataSourceFeature>? = nil) {
         self.componentView = componentView
         if let store = store{
             self.store = store
         }
         else{
-            self.store = .init(initialState: .init(), reducer: {SampleStateValueTypeDataSourceFeature()})
+            self.store = .init(initialState: .init(), reducer: {ValueTypeDataSourceFeature()})
         }
     }
     public var body: some View {
@@ -174,9 +155,23 @@ public struct SampleStateValueTypeDataSource<T:View, S:Equatable>: View {
             )
             Form{
                 ForEach(viewStore.schemaEntities){schemaEntity in
+                    DisclosureGroup {
+                        componentView(viewStore.state.getSubState(of: schemaEntity) as! S)
+                            .environment(\.dbrainDataAgent,dataAgent)
+                    } label: {
+                        HStack{
+                            Text(schemaEntity.name)
+                            Button {
+                                openWindow(value: schemaEntity.id)
+                            } label: {
+                                Text("open")
+                            }
+                            .buttonStyle(.plain)
+
+                        }
+                    }
+
                     
-                    componentView(viewStore.state.getSubState(of: schemaEntity) as! S)
-                        .environment(\.dbrainDataAgent,dataAgent)
                     
                 }
             }
