@@ -24,9 +24,9 @@ struct InstanceEntityFeatureView: View {
             } label: {
                 HStack{
                     Button {
-                        viewStore.send(.select(!viewStore.instanceEntity.isSelected))
+                        viewStore.send(.select(!viewStore.instanceEntity.isSelected_depreciated))
                     } label: {
-                        Text(viewStore.instanceEntity.isSelected ? "☑︎" : "☐").font(.headline)
+                        Text(viewStore.instanceEntity.isSelected_depreciated ? "☑︎" : "☐").font(.headline)
                     }
                     .buttonStyle(.plain)
                     

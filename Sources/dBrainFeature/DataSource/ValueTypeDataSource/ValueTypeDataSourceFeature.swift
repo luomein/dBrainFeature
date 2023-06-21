@@ -34,7 +34,7 @@ public extension ValueTypeDataSourceFeature{
        dataSource.instanceEntities.remove(instance)
    }
    func setInstanceSelected(of instance: InstanceEntity, isSelected: Bool, dataSource: inout ValueTypeDataSource){
-       dataSource.instanceEntities[id: instance.id]!.isSelected = isSelected
+       dataSource.instanceEntities[id: instance.id]!.isSelected_depreciated = isSelected
    }
 }
 public struct ValueTypeDataSourceFeature : ReducerProtocol{
@@ -153,11 +153,12 @@ public struct SampleStateValueTypeDataSource<T:View, S:Equatable>: View {
                 schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair),
                 schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelationPair)
             )
-            Form{
+            List{
                 ForEach(viewStore.schemaEntities){schemaEntity in
                     DisclosureGroup {
                         componentView(viewStore.state.getSubState(of: schemaEntity) as! S)
                             .environment(\.dbrainDataAgent,dataAgent)
+                        
                     } label: {
                         HStack{
                             Text(schemaEntity.name)
