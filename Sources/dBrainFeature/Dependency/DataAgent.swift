@@ -17,16 +17,19 @@ public struct dBrainDataAgent: EnvironmentKey {
     public var instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent
     public var schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent
     public var schemaEntitySelectToPairFeatureDataAgent : SchemaEntitySelectToPairFeature.DataAgent
+    public var instanceEntitySelectToPairFeatureDataAgent : InstanceEntitySelectToPairFeature.DataAgent
     
     public init(schemaEntityFeatureDataAgent: SchemaEntityFeature.DataAgent =  .init(createInstance: {_ in }, createRelation: {_ in }, deleteSchema: {_ in })
                 , instanceEntityFeatureDataAgent : InstanceEntityFeature.DataAgent = .init(deleteInstance: {_ in}, isSelected: {_,_ in})
                 ,schemaRelationPairElementFeatureDataAgent : SchemaRelationPairElementFeature.DataAgent = .init(createRelatedInstance: {_,_,_  in}, delete: {_ in })
                 ,schemaEntitySelectToPairFeatureDataAgent:SchemaEntitySelectToPairFeature.DataAgent = .init(createRelation: {_,_ in})
+                ,instanceEntitySelectToPairFeatureDataAgent:InstanceEntitySelectToPairFeature.DataAgent = .init(createRelation: {_,_,_,_ in})
     ) {
         self.schemaEntityFeatureDataAgent = schemaEntityFeatureDataAgent
         self.instanceEntityFeatureDataAgent = instanceEntityFeatureDataAgent
         self.schemaRelationPairElementFeatureDataAgent = schemaRelationPairElementFeatureDataAgent
         self.schemaEntitySelectToPairFeatureDataAgent = schemaEntitySelectToPairFeatureDataAgent
+        self.instanceEntitySelectToPairFeatureDataAgent = instanceEntitySelectToPairFeatureDataAgent
     }
     
 }

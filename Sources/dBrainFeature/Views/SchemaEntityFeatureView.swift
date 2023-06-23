@@ -11,6 +11,9 @@ import ComposableArchitecture
 public struct SchemaEntityFeatureView: View {
     public enum StackNavPath:Hashable{
         case SchemaEntitySelectToPairFeatureView(UUID)
+        case InstanceEntitySelectToPairFeatureView(instanceEntity: UUID
+                                                   , schemaRelationPair: UUID
+                                                   , schemaRelationPairElement: UUID)
     }
     @Environment(\.dbrainDataAgent) var dataAgent
     var store : StoreOf<SchemaEntityFeature>

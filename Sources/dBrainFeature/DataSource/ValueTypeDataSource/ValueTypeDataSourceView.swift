@@ -33,11 +33,13 @@ public struct ValueTypeDataSourceView: View {
             let createRelatedInstance : (SchemaRelationPairElement, SchemaRelationPair, InstanceEntity)->Void = {viewStore.send(.createRelatedInstance($0,$1,$2))}
             let deleteSchemaRelationPair : (SchemaRelationPair)->Void = {viewStore.send(.deleteSchemaRelationPair($0))}
             let createRelationPair : (SchemaEntity,Set<SchemaEntity>)->Void = {viewStore.send(.createRelationPair($0, $1))}
+            let createInstanceRelationPair : (InstanceEntity,Set<InstanceEntity>,SchemaRelationPair,SchemaRelationPairElement)->Void = {viewStore.send(.createInstanceRelationPair(instance: $0, selectedInstances: $1, pair: $2, pairElement: $3))}
             let dataAgent = dBrainDataAgent(
                 schemaEntityFeatureDataAgent: .init(createInstance: createInstance, createRelation: createRelation, deleteSchema: deleteSchema),
                 instanceEntityFeatureDataAgent: .init(deleteInstance: deleteInstance, isSelected: setInstanceSelected),
                 schemaRelationPairElementFeatureDataAgent: .init(createRelatedInstance: createRelatedInstance, delete: deleteSchemaRelationPair),
-                schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelationPair)
+                schemaEntitySelectToPairFeatureDataAgent : .init(createRelation: createRelationPair),
+                instanceEntitySelectToPairFeatureDataAgent : .init(createRelation: createInstanceRelationPair)
             )
             Group{
                 ForEach(viewStore.schemaEntities, id: \.id){schemaEntity in
@@ -68,6 +70,14 @@ public struct ValueTypeDataSourceView: View {
                 case .SchemaEntitySelectToPairFeatureView(let uuid):
                     let schema = viewStore.schemaEntities[id: uuid]!
                     SchemaEntitySelectToPairFeatureView(store: .init(initialState: viewStore.state.getSubStateForSelectSchemaPair(of: schema), reducer: {SchemaEntitySelectToPairFeature()}))
+                        .environment(\.dbrainDataAgent,dataAgent)
+                case .InstanceEntitySelectToPairFeatureView(
+                    instanceEntity: let instanceEntity
+                    , schemaRelationPair: let schemaRelationPair
+                    , schemaRelationPairElement: let schemaRelationPairElement):
+                    InstanceEntitySelectToPairFeatureView(store: .init(initialState: viewStore.state.getSubStateForSelectInstancePair(instanceEntity: instanceEntity
+                                                                                                                                      , schemaRelationPair: schemaRelationPair
+                                                                                                                                      , schemaRelationPairElement: schemaRelationPairElement), reducer: {InstanceEntitySelectToPairFeature()}))
                         .environment(\.dbrainDataAgent,dataAgent)
                 }
             }

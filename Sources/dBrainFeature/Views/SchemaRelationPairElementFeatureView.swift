@@ -23,13 +23,21 @@ struct SchemaRelationPairElementFeatureView: View {
                     Text("createInstance")
                 }
                 .buttonStyle(.plain)
+                NavigationLink(value: SchemaEntityFeatureView.StackNavPath.InstanceEntitySelectToPairFeatureView(
+                    instanceEntity: viewStore.instanceEntity.id
+                    , schemaRelationPair: viewStore.schemaRelationPair.id
+                    , schemaRelationPairElement: viewStore.schemaRelationPairElement.id)) {
+                                        Text("select")
+                                    }
+                                    .buttonStyle(.plain)
                 Button{
-                    viewStore.send(.delete)
-                }
-            label: {
-                Text("delete")
-            }
-            .buttonStyle(.plain)
+                                    viewStore.send(.delete)
+                                }
+                            label: {
+                                Text("delete")
+                            }
+                            .buttonStyle(.plain)
+                
                 ForEach(instanceElements) { instanceElement in
                     Text(instanceElement.instanceID.uuidString)
                 }

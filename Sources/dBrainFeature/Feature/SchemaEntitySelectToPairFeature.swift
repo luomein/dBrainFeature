@@ -17,7 +17,7 @@ public struct SchemaEntitySelectToPairFeature: ReducerProtocol{
     public struct State:Equatable{
         public var  schemaEntity : SchemaEntity
         public var allSchemaEntities : IdentifiedArrayOf<SchemaEntity>
-        public var selectedSchemaEntities : Set<SchemaEntity> = []
+        //public var selectedSchemaEntities : Set<SchemaEntity> = []
         
         
         public init(schemaEntity: SchemaEntity, allSchemaEntities: IdentifiedArrayOf<SchemaEntity> ) {
@@ -37,20 +37,20 @@ public struct SchemaEntitySelectToPairFeature: ReducerProtocol{
     
     public enum Action:Equatable{
         //case createRelation
-        case selectSchemas(Set<SchemaEntity>)
+        //case selectSchemas(Set<SchemaEntity>)
     }
     public var body: some ReducerProtocol<State, Action> {
         Reduce{ state, action in
-            switch action{
-            case .selectSchemas(let value):
-                state.selectedSchemaEntities = value
-                print(state.allSchemaEntities)
-                print(state.selectedSchemaEntities,state.selectedSchemaEntities.count)
-//            case .createRelation:
-//
-//                dataAgent.createRelation(state.schemaEntity,state.selectedSchemaEntities)
-//
-            }
+//            switch action{
+//            case .selectSchemas(let value):
+//                state.selectedSchemaEntities = value
+//                print(state.allSchemaEntities)
+//                print(state.selectedSchemaEntities,state.selectedSchemaEntities.count)
+////            case .createRelation:
+////
+////                dataAgent.createRelation(state.schemaEntity,state.selectedSchemaEntities)
+////
+//            }
             return .none
         }
     }

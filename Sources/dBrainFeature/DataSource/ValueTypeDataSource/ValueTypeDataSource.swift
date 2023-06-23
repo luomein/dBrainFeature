@@ -28,6 +28,17 @@ public struct ValueTypeDataSource : Equatable{
     public func getSubStateForSelectSchemaPair(of schemaEntity: SchemaEntity)->SchemaEntitySelectToPairFeature.State{
         return .init(schemaEntity: schemaEntity, allSchemaEntities: schemaEntities)
     }
+    public func getSubStateForSelectInstancePair(
+        instanceEntity: UUID
+        , schemaRelationPair: UUID
+        , schemaRelationPairElement: UUID)->InstanceEntitySelectToPairFeature.State{
+        let instance = self.instanceEntities[id: instanceEntity]!
+            let pair = self.schemaRelationPairs[id:schemaRelationPair]!
+            let pairElement = pair.elements[id: schemaRelationPairElement]!
+            let schemaInstances = self.instanceEntities.filter({$0.schemaID == pairElement.schemaID})
+        return .init(instanceEntity: instance, allInstanceEntities: schemaInstances, schemaRelationPair: pair, schemaRelationPairElement: pairElement)
+    }
+    
     public func getSubState(of schemaEntity: SchemaEntity)->SchemaEntityFeature.State{
         
         let schemaRelationPairs = schemaRelationPairs.filter({$0.hasSchema(schemaEntity: schemaEntity)} )

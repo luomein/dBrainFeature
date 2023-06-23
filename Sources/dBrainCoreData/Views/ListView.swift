@@ -43,6 +43,8 @@ public struct ListView: View {
             switch destination{
             case .SchemaEntitySelectToPairFeatureView(let uuid):
                 CoreDataSchemaEntitySelectToPairWrapperView(uuid: uuid)
+            default:
+                fatalError()
             }
         }
     }
