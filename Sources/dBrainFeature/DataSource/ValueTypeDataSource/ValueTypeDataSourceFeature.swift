@@ -81,11 +81,14 @@ public struct ValueTypeDataSourceFeature : ReducerProtocol{
         case createRelatedInstance(SchemaRelationPairElement, SchemaRelationPair,  InstanceEntity)
         case deleteSchemaRelationPair(SchemaRelationPair)
         case createInstanceRelationPair(instance: InstanceEntity, selectedInstances : Set<InstanceEntity>, pair: SchemaRelationPair, pairElement: SchemaRelationPairElement)
+        case selectSchema(SchemaEntity)
     }
     
     public var body: some ReducerProtocol<ValueTypeDataSource, Action> {
         Reduce{ state, action in
             switch action{
+            case .selectSchema:
+                break
             case .informStateDecrementalChange:
                 break
             case .informStateIncrementalChange:

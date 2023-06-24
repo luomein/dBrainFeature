@@ -56,7 +56,13 @@ public struct ValueTypeDataSourceView: View {
                                 Text("open...")
                             }
                             .buttonStyle(.plain)
-
+                            Text(schemaEntity.name)
+                            Button {
+                                viewStore.send(.selectSchema(schemaEntity))
+                            } label: {
+                                Text("select")
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
 
