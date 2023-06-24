@@ -45,6 +45,9 @@ public struct InstanceRelationPair: Equatable, Identifiable{
     public func hasRelation(instance0: InstanceEntity,instance1: InstanceEntity)->Bool{
         return (elements.first(where: {$0.instanceID == instance0.id}) != nil) && (elements.first(where: {$0.instanceID == instance1.id}) != nil)
     }
+    public func hasInstanceAndPairedSchemaElement(instance: InstanceEntity, schemaElement: SchemaRelationPairElement)->Bool{
+        return self.hasInstance(instance: instance) && (self.elements.first(where: {$0.instanceID != instance.id && $0.schemaID == schemaElement.id}) != nil )
+    }
 }
 
 public struct InstanceRelationPairElement: Equatable, Identifiable{

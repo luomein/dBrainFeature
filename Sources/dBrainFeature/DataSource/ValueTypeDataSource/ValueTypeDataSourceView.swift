@@ -50,13 +50,14 @@ public struct ValueTypeDataSourceView: View {
                     } label: {
                         HStack{
                             Text(schemaEntity.name)
+                            Text(schemaEntity.id.uuidString)
                             Button {
                                 openWindow(value: schemaEntity.id)
                             } label: {
                                 Text("open...")
                             }
                             .buttonStyle(.plain)
-                            Text(schemaEntity.name)
+                            
                             Button {
                                 viewStore.send(.selectSchema(schemaEntity))
                             } label: {

@@ -16,7 +16,8 @@ struct SchemaRelationPairElementFeatureView: View {
     public var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             DisclosureGroup {
-                let instanceElements = viewStore.instanceRelationPairs.map({$0.elements.first(where: {$0.instanceID != viewStore.instanceEntity.id})!})
+//                let instanceElements = viewStore.instanceRelationPairs.map({$0.elements.first(where: {$0.instanceID != viewStore.instanceEntity.id})!})
+                let instanceElements = viewStore.instanceRelationPairs.map({$0.elements.first(where: {$0.schemaID == viewStore.schemaRelationPairElement.id})!})
                 Button {
                     viewStore.send(.createRelatedInstance)
                 } label: {
@@ -45,7 +46,10 @@ struct SchemaRelationPairElementFeatureView: View {
 //                    Text(schemaRelationPairElement.id.uuidString)
 //                })
             } label: {
-                Text(viewStore.schemaRelationPairElement.schemaID.uuidString)
+                HStack{
+                    Text(viewStore.schemaRelationPairElement.schemaID.uuidString)
+                    Text(viewStore.schemaRelationPairElement.id.uuidString)
+                }
             }
         }
     }

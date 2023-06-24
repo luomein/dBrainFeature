@@ -30,9 +30,12 @@ public struct SchemaRelationPairElementFeature: ReducerProtocol{
             self.instanceRelationPairs = instanceRelationPairs
             
             assert(schemaRelationPair.elements.first(where: {$0 != schemaRelationPairElement})!.schemaID == schemaEntity.id)
-            assert(instanceRelationPairs.first(where: {$0.elements.filter( {
-                $0.instanceID != instanceEntity.id && $0.schemaID != schemaRelationPairElement.id
-            }).count > 0}) == nil)
+            
+//            print(instanceRelationPairs)
+//            print(schemaRelationPairElement)
+//            print(instanceEntity)
+//            print(schemaRelationPair)
+            assert(instanceRelationPairs.first(where: {!$0.hasInstanceAndPairedSchemaElement(instance: instanceEntity, schemaElement: schemaRelationPairElement)}) == nil)
             
             assert( instanceEntity.schemaID == schemaEntity.id)
             assert(instanceRelationPairs.first(where: {schemaRelationPair.id != $0.schemaID}) == nil)

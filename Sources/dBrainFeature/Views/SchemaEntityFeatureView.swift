@@ -57,8 +57,10 @@ public struct SchemaEntityFeatureView: View {
                     }
                     .buttonStyle(.plain)
                     ForEach(viewStore.schemaRelationPairs.flatMap({$0.getPairedElements(of:viewStore.schemaEntity)}), content: { schemaRelationPairElement in
-                        
-                        Text(schemaRelationPairElement.schemaID.uuidString)
+                        HStack{
+                            Text(schemaRelationPairElement.schemaID.uuidString)
+                            //Text(viewStore.state.schemaEntities[id:schemaRelationPairElement.schemaID]!.name)
+                        }
                     })
                 } label: {
                     Text("Relation")

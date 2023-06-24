@@ -21,9 +21,11 @@ public extension ValueTypeDataSourceFeature{
     func createRelatedInstance(of schemaRelationPairElement: SchemaRelationPairElement, in pair: SchemaRelationPair, from instance: InstanceEntity, dataSource: inout ValueTypeDataSource)->ValueTypeDataSource{
        let newInstance = InstanceEntity(id: UUID(), schemaID: schemaRelationPairElement.schemaID)
        let newPairInstanceElement = InstanceRelationPairElement(id: UUID(), instanceID: newInstance.id, schemaID: schemaRelationPairElement.id)
+        //print(newPairInstanceElement)
        
        let pairedSchemaRelationPairElement = pair.elements.first(where: {$0.id != schemaRelationPairElement.id})!
        let pairedInstanceRelationPairElement = InstanceRelationPairElement(id: UUID(), instanceID: instance.id, schemaID: pairedSchemaRelationPairElement.id)
+        //print(pairedInstanceRelationPairElement)
        
        let newPairInstance = InstanceRelationPair(id: UUID(), elements: .init(uniqueElements: [newPairInstanceElement, pairedInstanceRelationPairElement]), schemaID: pair.id)
        

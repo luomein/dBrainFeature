@@ -22,6 +22,9 @@ public struct InstanceEntityFeature: ReducerProtocol{
         public func getSubState(of schemaRelationPairElement: SchemaRelationPairElement)->SchemaRelationPairElementFeature.State{
             let schemaRelationPair = schemaRelationPairs.first(where: {$0.elements[id:schemaRelationPairElement.id] != nil})!
             let filteredInstanceRelationPairs = instanceRelationPairs.filter({$0.schemaID == schemaRelationPair.id})
+                .filter({
+                    $0.hasInstanceAndPairedSchemaElement(instance: instanceEntity, schemaElement: schemaRelationPairElement)
+                })
             return .init(schemaEntity: schemaEntity
                          , instanceEntity: instanceEntity
                          , schemaRelationPair: schemaRelationPair
