@@ -43,7 +43,16 @@ public struct InstanceRelationPair: Equatable, Identifiable{
         return elements.first(where: {$0.instanceID == instance.id}) != nil
     }
     public func hasRelation(instance0: InstanceEntity,instance1: InstanceEntity)->Bool{
+        
         return (elements.first(where: {$0.instanceID == instance0.id}) != nil) && (elements.first(where: {$0.instanceID == instance1.id}) != nil)
+    }
+    public static func hasRelation(pair: [Self],instance0: InstanceEntity,instance1: InstanceEntity, isSelfReferenceARelation:Bool = true)->Bool{
+        if isSelfReferenceARelation && instance0 == instance1{return true}
+        if let _ = pair.first(where: {$0.hasRelation(instance0: instance0, instance1: instance1)}){
+            return true
+        }
+        return false
+        //return pair.hasRelation(instance0: instance0, instance1: instance1)
     }
     public func hasInstanceAndPairedSchemaElement(instance: InstanceEntity, schemaElement: SchemaRelationPairElement)->Bool{
         return self.hasInstance(instance: instance) && (self.elements.first(where: {$0.instanceID != instance.id && $0.schemaID == schemaElement.id}) != nil )

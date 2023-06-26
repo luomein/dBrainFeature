@@ -39,7 +39,7 @@ public extension ValueTypeDataSourceFeature{
         
         var newInstancePair : IdentifiedArrayOf<InstanceRelationPair> = []
         for selectedInstance in selectedInstances {
-            if let _ = dataSource.instanceRelationPairs.first(where: {$0.hasRelation(instance0: instance, instance1: selectedInstance)})  {
+            if  InstanceRelationPair.hasRelation(pair: dataSource.instanceRelationPairs.map({$0}), instance0: instance, instance1: selectedInstance){
                 continue
             }
             let instancePairElementSelf = InstanceRelationPairElement(id: UUID(), instanceID: instance.id, schemaID: pair.elements.first(where: {$0 != pairElement})!.id)
